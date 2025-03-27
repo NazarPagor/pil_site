@@ -1,0 +1,21 @@
+# Production Environment - Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin routes and API
+Disallow: /admin/
+Disallow: /api/
+
+# Vercel Previews - Completely disallow crawling
+User-agent: *
+Disallow: /
+
+# Preview Parameters - Disallow all crawlers if preview param is present
+User-agent: *
+Disallow: /*?preview=*
+Disallow: /*?development=*
+
+# Sitemap location
+Sitemap: https://pilgrimage-center.vercel.app/sitemap.xml
+
+# Note: This file is a fallback. The X-Robots-Tag header is also set for preview deployments. 

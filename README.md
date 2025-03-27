@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Не видилаяти працює!!!!
+# Паломницький центр - Веб-сайт
 
-## Getting Started
+Сучасний веб-сайт для паломницького центру з адміністративною панеллю для керування контентом.
 
-First, run the development server:
+## Встановлення
 
+1. Клонуйте репозиторій:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/pilgrimage-center.git
+cd pilgrimage-center
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Встановіть залежності:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Створіть файл `.env` в корені проекту з наступними змінними:
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/pilgrimage_center"
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+ADMIN_SECRET="your-admin-secret-here"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Створіть базу даних та застосуйте міграції:
+```bash
+npx prisma migrate dev
+```
 
-## Learn More
+## Запуск
 
-To learn more about Next.js, take a look at the following resources:
+1. Запустіть сервер розробки:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Відкрийте [http://localhost:3000](http://localhost:3000) у вашому браузері.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Адміністративна панель
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Для доступу до адміністративної панелі:
+1. Перейдіть за адресою `/admin/login`
+2. Введіть секретну фразу, вказану в змінній `ADMIN_SECRET`
