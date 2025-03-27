@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 
 interface Contact {
@@ -25,99 +25,91 @@ export default function ContactsAdminPage() {
     const fetchContacts = async () => {
       try {
         setIsLoading(true);
-        // У майбутньому замінити на реальний API-запит
-        const mockContacts: Contact[] = [
-          {
-            id: '1',
-            name: 'Іван Петренко',
-            email: 'ivan.petrenko@example.com',
-            phone: '+380961234567',
-            subject: 'Запитання про паломництво',
-            message: 'Доброго дня! Хотів би дізнатися більше про найближче паломництво до Зарваниці. Яка вартість і як можна зареєструватися?',
-            createdAt: '2023-10-15T09:30:00Z',
-            isRead: false,
-          },
-          {
-            id: '2',
-            name: 'Марія Коваленко',
-            email: 'mariya.kovalenko@example.com',
-            phone: '+380972345678',
-            subject: 'Замовлення групового паломництва',
-            message: 'Вітаю! Наша парафія хотіла б організувати групове паломництво до Гошева в серпні. Можливо у вас є спеціальні пропозиції для груп від 20 осіб?',
-            createdAt: '2023-10-10T14:15:00Z',
-            isRead: true,
-          },
-          {
-            id: '3',
-            name: 'Петро Василенко',
-            email: 'petro.vasylenko@example.com',
-            phone: '+380983456789',
-            subject: 'Уточнення програми',
-            message: 'Добрий день! Зацікавився вашим паломництвом до Риму. Хотів би уточнити програму поїздки та чи включені до вартості квитки на авіапереліт?',
-            createdAt: '2023-10-05T11:45:00Z',
-            isRead: false,
-          },
-          {
-            id: '4',
-            name: 'Олена Сидоренко',
-            email: 'olena.sydorenko@example.com',
-            phone: '+380994567890',
-            subject: 'Необхідні документи',
-            message: 'Добрий день! Підкажіть, будь ласка, які документи необхідні для участі в паломництві до Єрусалиму? Чи потрібно робити додаткові щеплення?',
-            createdAt: '2023-09-28T16:20:00Z',
-            isRead: true,
-          },
-          {
-            id: '5',
-            name: 'Андрій Мельник',
-            email: 'andriy.melnyk@example.com',
-            phone: '+380505678901',
-            subject: 'Духовний супровід',
-            message: 'Вітаю! Цікавить, хто буде духовним наставником під час паломництва до Люрду? Чи будуть проводитися спільні молитви та духовні бесіди?',
-            createdAt: '2023-09-20T08:10:00Z',
-            isRead: true,
-          },
-        ];
+        const response = await fetch('/api/contact');
         
-        // Імітація завантаження з API
-        setTimeout(() => {
-          setContacts(mockContacts);
-          setIsLoading(false);
-        }, 500);
+        if (!response.ok) {
+          throw new Error('Помилка завантаження контактів');
+        }
+        
+        const data = await response.json();
+        setContacts(data);
       } catch (error) {
-        console.error('Помилка завантаження даних:', error);
-        setError('Помилка завантаження повідомлень. Спробуйте знову пізніше.');
+        console.error('Error fetching contacts:', error);
+        setError('Не вдалося завантажити контакти');
+      } finally {
         setIsLoading(false);
       }
     };
-
+    
     fetchContacts();
   }, []);
 
-  const handleMarkAsRead = (id: string) => {
-    setContacts(contacts.map(contact => 
-      contact.id === id ? { ...contact, isRead: true } : contact
-    ));
-    if (selectedContact?.id === id) {
-      setSelectedContact({ ...selectedContact, isRead: true });
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      const response = await fetch(`/api/contact/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isRead: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Помилка оновлення контакту');
+      }
+
+      // Оновлення локального стану
+      setContacts(prevContacts =>
+        prevContacts.map(contact =>
+          contact.id === id ? { ...contact, isRead: true } : contact
+        )
+      );
+
+      if (selectedContact?.id === id) {
+        setSelectedContact(prev => prev ? { ...prev, isRead: true } : null);
+      }
+    } catch (error) {
+      console.error('Error marking contact as read:', error);
+      alert('Помилка при позначенні контакту як прочитаного');
     }
   };
 
-  const handleDeleteContact = (id: string) => {
-    if (window.confirm('Ви впевнені, що хочете видалити це повідомлення?')) {
-      setContacts(contacts.filter(contact => contact.id !== id));
+  const handleDeleteContact = async (id: string) => {
+    if (!confirm('Ви впевнені, що хочете видалити цей контакт?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/contact/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Помилка видалення контакту');
+      }
+
+      // Оновлення локального стану
+      setContacts(prevContacts => prevContacts.filter(contact => contact.id !== id));
+      
       if (selectedContact?.id === id) {
         setSelectedContact(null);
       }
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+      alert('Помилка при видаленні контакту');
     }
   };
 
-  const filteredContacts = contacts.filter(contact => {
-    if (filter === 'all') return true;
-    if (filter === 'read') return contact.isRead;
-    if (filter === 'unread') return !contact.isRead;
-    return true;
-  });
+  const filteredContacts = useMemo(() => {
+    switch (filter) {
+      case 'read':
+        return contacts.filter(contact => contact.isRead);
+      case 'unread':
+        return contacts.filter(contact => !contact.isRead);
+      default:
+        return contacts;
+    }
+  }, [contacts, filter]);
 
   if (isLoading) {
     return (
@@ -158,13 +150,13 @@ export default function ContactsAdminPage() {
           {/* Sidebar з листом повідомлень */}
           <div className="w-full lg:w-2/5 border-r">
             <div className="p-4 border-b">
-              <div className="flex space-x-2">
+              <div className="flex mb-4 space-x-2">
                 <button
                   onClick={() => setFilter('all')}
                   className={`px-3 py-1 rounded-md text-sm ${
-                    filter === 'all' 
-                      ? 'bg-primary-100 text-primary-800 font-medium' 
-                      : 'text-gray-500 hover:bg-gray-100'
+                    filter === 'all'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   Всі
@@ -172,9 +164,9 @@ export default function ContactsAdminPage() {
                 <button
                   onClick={() => setFilter('unread')}
                   className={`px-3 py-1 rounded-md text-sm ${
-                    filter === 'unread' 
-                      ? 'bg-primary-100 text-primary-800 font-medium' 
-                      : 'text-gray-500 hover:bg-gray-100'
+                    filter === 'unread'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   Непрочитані
@@ -182,9 +174,9 @@ export default function ContactsAdminPage() {
                 <button
                   onClick={() => setFilter('read')}
                   className={`px-3 py-1 rounded-md text-sm ${
-                    filter === 'read' 
-                      ? 'bg-primary-100 text-primary-800 font-medium' 
-                      : 'text-gray-500 hover:bg-gray-100'
+                    filter === 'read'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   Прочитані
