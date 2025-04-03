@@ -34,17 +34,17 @@ interface FormData {
   }>;
 }
 
-export default function EventNewRedirect() {
+export default function EventEditRedirect({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const eventId =  params.id;
+  
 
-  const isEditMode = false;
-  const eventId = null;
 
-  const pageTitle = isEditMode ? 'Редагування події' : 'Створення нової події';
 
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -66,9 +66,66 @@ export default function EventNewRedirect() {
     includes: '',
     notIncluded: '',
     documentsRequired: '',
-    status: 'active',
+    status: 'active', // За замовчуванням активний
     schedule: [{ day: 1, title: 'День 1', activities: [''] }]
   });
+
+  // Отримання даних для редагування
+  useEffect(() => {
+    if (eventId) {
+      const fetchEvent = async () => {
+        try {
+          setIsLoading(true);
+          const response = await fetch(`/api/events/${eventId}`);
+          
+          if (!response.ok) {
+            throw new Error('Не вдалося отримати дані події');
+          }
+          
+          const eventData = await response.json();
+          
+          // Форматування дат для полів введення (формат YYYY-MM-DD)
+          const formatDateForInput = (dateString: string) => {
+            const date = new Date(dateString);
+            return date.toISOString().split('T')[0];
+          };
+          
+          setFormData({
+            title: eventData.title,
+            description: eventData.description,
+            longDescription: eventData.longDescription || '',
+            startDate: formatDateForInput(eventData.startDate),
+            endDate: eventData.endDate ? formatDateForInput(eventData.endDate) : '',
+            location: eventData.location,
+            locationDescription: eventData.locationDescription || '',
+            locationLat: eventData.locationLat?.toString() || '',
+            locationLng: eventData.locationLng?.toString() || '',
+            price: eventData.price.toString(),
+            maxParticipants: eventData.maxParticipants.toString(),
+            hasAvailablePlaces: eventData.availablePlaces > 0, // Перетворюємо числове значення на булеве
+            duration: eventData.duration || '',
+            image: null,
+            galleryImages: eventData.galleryImages || [],
+            difficulty: eventData.difficulty || 'medium',
+            includes: eventData.includes?.join(', ') || '',
+            notIncluded: eventData.notIncluded?.join(', ') || '',
+            documentsRequired: eventData.documentsRequired?.join(', ') || '',
+            status: eventData.status || 'active',
+            schedule: eventData.scheduleData || [{ day: 1, title: 'День 1', activities: [''] }]
+          });
+          
+          setImagePreview(eventData.image);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Помилка завантаження даних:', error);
+          setError('Помилка завантаження даних про подію. Спробуйте ще раз пізніше.');
+          setIsLoading(false);
+        }
+      };
+
+      fetchEvent();
+    }
+  }, [eventId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -136,8 +193,8 @@ export default function EventNewRedirect() {
       }
 
       // Відправляємо дані на API
-      const url = isEditMode ? `/api/events/${eventId}` : '/api/events';
-      const method = isEditMode ? 'PUT' : 'POST';
+      const url = `/api/events/${eventId}`;
+      const method =  'PUT';
       
       const response = await fetch(url, {
         method,
@@ -195,7 +252,7 @@ export default function EventNewRedirect() {
   return (
     <div className="space-y-6">
     <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold text-primary-800">{pageTitle}</h1>
+      <h1 className="text-2xl font-bold text-primary-800">Редагування поїздки</h1>
       <Link 
         href="/admin/events" 
         className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md"
@@ -597,7 +654,7 @@ export default function EventNewRedirect() {
           disabled={isSubmitting}
           className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
         >
-          {isSubmitting ? `${isEditMode ? 'Оновлення...' : 'Створення...'}` : `${isEditMode ? 'Оновити' : 'Створити'} подію`}
+          {isSubmitting ?  'Оновлення...' :  'Оновити'} подію
         </button>
       </div>
     </form>

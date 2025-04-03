@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { FaCalendarAlt, FaUsers, FaFileAlt, FaEnvelope, FaCog, FaDoorOpen, FaPlusCircle } from 'react-icons/fa';
 
 interface DashboardStats {
   eventsCount: number;
   galleriesCount: number;
- // pagesCount: number;
+  // pagesCount: number;
 }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     eventsCount: 0,
     galleriesCount: 0,
-   // pagesCount: 0,
+    // pagesCount: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,7 +45,7 @@ export default function AdminDashboard() {
   }
 
   const statsCards = [
-    {
+    { 
       title: 'Заходи',
       count: stats.eventsCount,
       icon: (
@@ -83,7 +84,7 @@ export default function AdminDashboard() {
   ];
 
   const quickActions = [
-    {
+    { 
       title: 'Створити новий захід',
       description: 'Додайте новий захід з описом, датами, ціною та зображенням',
       icon: (
@@ -94,7 +95,7 @@ export default function AdminDashboard() {
       href: '/admin/events/new',
       bgClass: 'bg-primary-600 hover:bg-primary-700',
     },
-    {
+    { 
       title: 'Створити нову галерею',
       description: 'Додайте нову галерею з фотографіями та описом',
       icon: (
@@ -105,7 +106,7 @@ export default function AdminDashboard() {
       href: '/admin/gallery/new',
       bgClass: 'bg-secondary-600 hover:bg-secondary-700',
     },
-    {
+    { 
       title: 'Редагувати налаштування',
       description: 'Змініть загальні налаштування сайту',
       icon: (
