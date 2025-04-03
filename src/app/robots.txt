@@ -1,19 +1,11 @@
-# Production Environment - Allow all crawlers
+# Allow all crawlers to index everything by default
 User-agent: *
 Allow: /
 
-# Disallow admin routes and API
+# Block specific sensitive or non-public routes
 Disallow: /admin/
 Disallow: /api/
 
-# Vercel Previews - Completely disallow crawling
-User-agent: *
-Disallow: /
-
-# Preview Parameters - Disallow all crawlers if preview param is present
-User-agent: *
+# Block preview and development query parameters
 Disallow: /*?preview=*
 Disallow: /*?development=*
-
-
-# Note: This file is a fallback. The X-Robots-Tag header is also set for preview deployments. 
