@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
+import { getBaseUrl } from './about/page';
 
 // Improved environment detection
 const isProduction = process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === 'production';
@@ -16,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Get the base URL
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const baseUrl = getBaseUrl()|| 'https://localhost:3000';
   
   // Check if it's a Vercel preview domain
   if (isVercelPreviewDomain(baseUrl)) {
@@ -49,10 +50,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static routes
   const routes = [
     '',
+    '/about',
     '/events',
     '/gallery',
     '/contacts',
-    '/about',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
