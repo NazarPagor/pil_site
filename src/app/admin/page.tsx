@@ -5,17 +5,15 @@ import Link from 'next/link';
 
 interface DashboardStats {
   eventsCount: number;
-  contactsCount: number;
   galleriesCount: number;
-  pagesCount: number;
+ // pagesCount: number;
 }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     eventsCount: 0,
-    contactsCount: 0,
     galleriesCount: 0,
-    pagesCount: 0,
+   // pagesCount: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,7 +53,7 @@ export default function AdminDashboard() {
         </svg>
       ),
       href: '/admin/events',
-      bgClass: 'bg-primary-50',
+      bgClass: 'bg-primary-200',
       actionText: 'Керувати заходами',
     },
     {
@@ -67,33 +65,21 @@ export default function AdminDashboard() {
         </svg>
       ),
       href: '/admin/gallery',
-      bgClass: 'bg-secondary-50',
+      bgClass: 'bg-secondary-200',
       actionText: 'Керувати галереями',
     },
-    {
-      title: 'Контакти',
-      count: stats.contactsCount,
-      icon: (
-        <svg className="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      ),
-      href: '/admin/contacts',
-      bgClass: 'bg-primary-100',
-      actionText: 'Переглянути контакти',
-    },
-    {
-      title: 'Сторінки',
-      count: stats.pagesCount,
-      icon: (
-        <svg className="w-8 h-8 text-secondary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-        </svg>
-      ),
-      href: '/admin/pages',
-      bgClass: 'bg-secondary-100',
-      actionText: 'Керувати сторінками',
-    },
+    // {
+    //   title: 'Сторінки',
+    //   count: stats.pagesCount,
+    //   icon: (
+    //     <svg className="w-8 h-8 text-secondary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+    //     </svg>
+    //   ),
+    //   href: '/admin/pages',
+    //   bgClass: 'bg-secondary-100',
+    //   actionText: 'Керувати сторінками',
+    // },
   ];
 
   const quickActions = [
@@ -143,7 +129,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Статистика */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         {statsCards.map((card, index) => (
           <div key={index} className={`${card.bgClass} rounded-lg overflow-hidden shadow-sm`}>
             <div className="p-5">
@@ -179,7 +165,7 @@ export default function AdminDashboard() {
       {/* Швидкі дії */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-warmGray-900">Швидкі дії</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {quickActions.map((action, index) => (
             <Link
               key={index}
@@ -195,46 +181,6 @@ export default function AdminDashboard() {
               </div>
             </Link>
           ))}
-        </div>
-      </div>
-
-      {/* Останні дії */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-warmGray-900 mb-4">Останні дії на сайті</h2>
-        <div className="space-y-4">
-          <div className="flex items-center p-3 hover:bg-warmGray-50 rounded-lg transition-colors">
-            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center mr-4">
-              <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-medium text-warmGray-900">Створено новий захід</p>
-              <p className="text-sm text-warmGray-500">Сьогодні, 10:30</p>
-            </div>
-          </div>
-          <div className="flex items-center p-3 hover:bg-warmGray-50 rounded-lg transition-colors">
-            <div className="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center mr-4">
-              <svg className="w-5 h-5 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-medium text-warmGray-900">Отримано нове повідомлення</p>
-              <p className="text-sm text-warmGray-500">Вчора, 15:45</p>
-            </div>
-          </div>
-          <div className="flex items-center p-3 hover:bg-warmGray-50 rounded-lg transition-colors">
-            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center mr-4">
-              <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-medium text-warmGray-900">Оновлено галерею</p>
-              <p className="text-sm text-warmGray-500">3 дні тому</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
