@@ -12,6 +12,7 @@ export default function AdminLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isShowNavigation, setIsShowNavigation] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -41,7 +42,13 @@ export default function AdminLayout({
     if(!isAuthenticated) {
       router.replace('/admin/login');
     }
-  }, [isAuthenticated, pathname]);
+  }, [isAuthenticated]);
+
+  useEffect(()=>{
+    if(isAuthenticated){
+      setIsShowNavigation(true);
+    }
+  }, [isAuthenticated, router])
 
   if (isLoading) {
     return (
@@ -87,7 +94,7 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen flex bg-warmGray-50">
-    {isAuthenticated && <>
+    {isShowNavigation ? <>
        {/* Sidebar */}
        <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64 border-r border-warmGray-200 bg-white">
@@ -198,7 +205,7 @@ export default function AdminLayout({
           </div>
         )}
       </div>
-    </>}
+    </> : null}
 
       {/* Main content */}
       <div className="flex flex-col flex-1 overflow-hidden">

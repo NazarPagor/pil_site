@@ -11,6 +11,8 @@ export default function AdminLogin() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
 
+
+
   // Check if already authenticated
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,7 +47,7 @@ export default function AdminLogin() {
       });
 
       if (response.ok) {
-        router.push('/admin');
+        router.replace('/admin');
       } else {
         setError('Неправильна секретна фраза');
       }
