@@ -1,11 +1,10 @@
+import { usePathname } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  // Get the hostname from the request
+export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
-  
-  // Check if it's a Vercel preview deployment
   const isVercelPreview = hostname.includes('.vercel.');
+
   
   // Check if it's a preview environment
   const isPreview = 
@@ -24,12 +23,17 @@ export function middleware(request: NextRequest) {
     }
 
     // Check for admin authentication cookie
-    const isAuthenticated = request.cookies.get('admin_auth')?.value === 'true';
-
-    if (!isAuthenticated) {
-      // Redirect to login page if not authenticated
+    const adminAuthCookie = request.cookies.get('admin_auth');
+    
+    // If no cookie is present, redirect to login
+    if (!adminAuthCookie?.value) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
+    
+    // Note: Since we can't access the database in Edge middleware,
+    // we rely on the check-auth API call in the Admin layout component
+    // to verify that the hash in the cookie matches the one in the database.
+    // This middleware only ensures the cookie is present.
   }
 
   // Get the response
