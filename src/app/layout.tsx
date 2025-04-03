@@ -35,7 +35,6 @@ export const metadata: Metadata = {
     apple: '/logo.png',
   },
   viewport: {
-    width: 'device-width',
     initialScale: 1,
   },
   robots: {

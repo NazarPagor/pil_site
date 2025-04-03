@@ -8,8 +8,6 @@ interface PageData {
   slug: string;
   description: string;
   content: string;
-  metaTitle: string;
-  metaDescription: string;
   isSystem: boolean;
 }
 
@@ -26,8 +24,6 @@ export default function EditPageContent({ params }: { params: { id: string } }) 
     slug: '',
     description: '',
     content: '',
-    metaTitle: '',
-    metaDescription: '',
     isSystem: false,
   });
 
@@ -48,8 +44,6 @@ export default function EditPageContent({ params }: { params: { id: string } }) 
               slug: '',
               description: 'Головна сторінка сайту паломницького центру',
               content: '<h2>Ласкаво просимо до паломницького центру</h2><p>Наш центр допомагає організувати паломницькі поїздки до святих місць в Україні та закордоном.</p><p>Ми пропонуємо духовний супровід, комфортні умови та доступні ціни.</p>',
-              metaTitle: 'Головна | Паломницький центр',
-              metaDescription: 'Паломницький центр організовує духовні подорожі до святих місць в Україні та закордоном.',
               isSystem: true,
             };
           } else if (id === '2') { // Про нас
@@ -58,8 +52,6 @@ export default function EditPageContent({ params }: { params: { id: string } }) 
               slug: 'about',
               description: 'Інформація про паломницький центр, наша місія та цінності',
               content: '<h2>Про наш паломницький центр</h2><p>Наш паломницький центр був заснований у 2010 році з метою організації духовних подорожей для вірян.</p><p>За роки нашої діяльності ми організували сотні паломництв до найважливіших святинь.</p><h3>Наша місія</h3><p>Допомагати людям у їхньому духовному зростанні через паломництва та прощі.</p>',
-              metaTitle: 'Про нас | Паломницький центр',
-              metaDescription: 'Дізнайтеся більше про наш паломницький центр, нашу місію та цінності.',
               isSystem: true,
             };
           } else { // Інші сторінки
@@ -68,8 +60,6 @@ export default function EditPageContent({ params }: { params: { id: string } }) 
               slug: 'rules',
               description: 'Важлива інформація для паломників: правила поведінки та рекомендації',
               content: '<h2>Правила для паломників</h2><p>Перед тим, як вирушити в паломництво, ознайомтеся з нашими правилами та рекомендаціями.</p><h3>Загальні правила</h3><ul><li>Поважайте місцеві звичаї та традиції</li><li>Дотримуйтесь вказівок духовного наставника</li><li>Будьте пунктуальними</li></ul>',
-              metaTitle: 'Правила паломництва | Паломницький центр',
-              metaDescription: 'Правила поведінки та корисні рекомендації для паломників.',
               isSystem: false,
             };
           }
@@ -359,44 +349,6 @@ export default function EditPageContent({ params }: { params: { id: string } }) 
           </p>
         </div>
 
-        <div className="border-t pt-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">SEO налаштування</h3>
-          <div className="grid grid-cols-1 gap-6">
-            <div>
-              <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                Мета-заголовок
-              </label>
-              <input
-                type="text"
-                id="metaTitle"
-                name="metaTitle"
-                value={pageData.metaTitle}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Рекомендована довжина: до 60 символів.
-              </p>
-            </div>
-            <div>
-              <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                Мета-опис
-              </label>
-              <textarea
-                id="metaDescription"
-                name="metaDescription"
-                value={pageData.metaDescription}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-              ></textarea>
-              <p className="mt-1 text-xs text-gray-500">
-                Рекомендована довжина: до 160 символів.
-              </p>
-            </div>
-          </div>
-        </div>
-
         <div className="pt-3 border-t">
           <div className="flex justify-end">
             <Link
@@ -415,17 +367,6 @@ export default function EditPageContent({ params }: { params: { id: string } }) 
           </div>
         </div>
       </form>
-      
-      {/* Попередній перегляд */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Попередній перегляд</h2>
-        <div className="border border-gray-300 rounded-md p-6 bg-gray-50">
-          <div 
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: pageData.content }}
-          />
-        </div>
-      </div>
     </div>
   );
 } 
