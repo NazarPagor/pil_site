@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, redirect } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminLayout({
@@ -12,16 +12,19 @@ export default function AdminLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isShowNavigation, setIsShowNavigation] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Make the request to the check-auth endpoint to verify the hash
         const response = await fetch('/api/admin/check-auth');
         if (response.ok) {
           setIsAuthenticated(true);
         } else {
+          // If authentication fails, redirect to login
           router.push('/admin/login');
         }
       } catch (error) {
@@ -35,16 +38,24 @@ export default function AdminLayout({
     checkAuth();
   }, [router]);
 
+  useEffect(() => {
+    if(!isAuthenticated) {
+      router.replace('/admin/login');
+    }
+  }, [isAuthenticated]);
+
+  useEffect(()=>{
+    if(isAuthenticated){
+      setIsShowNavigation(true);
+    }
+  }, [isAuthenticated, router])
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-warmGray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return null;
   }
 
   const navigationItems = [
@@ -83,8 +94,9 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen flex bg-warmGray-50">
-      {/* Sidebar */}
-      <div className="hidden md:flex md:flex-shrink-0">
+    {isShowNavigation ? <>
+       {/* Sidebar */}
+       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64 border-r border-warmGray-200 bg-white">
           <div className="h-16 flex items-center px-6 border-b border-warmGray-200">
             <Link href="/admin" className="text-xl font-bold text-primary-800">
@@ -193,6 +205,7 @@ export default function AdminLayout({
           </div>
         )}
       </div>
+    </> : null}
 
       {/* Main content */}
       <div className="flex flex-col flex-1 overflow-hidden">

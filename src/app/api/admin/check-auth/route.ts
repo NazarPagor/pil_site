@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { verifyAdminCookie } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get('admin_auth')?.value === 'true';
+    const isAuthenticated = await verifyAdminCookie();
 
     if (!isAuthenticated) {
       return NextResponse.json(

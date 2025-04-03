@@ -191,6 +191,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
               </ul>
             </div>
           </div>
+          <div className="fixed bottom-2 left-2 z-10">
+            <a 
+              href="/admin" 
+              className="text-gray-300 hover:text-gray-400 text-xs opacity-50 hover:opacity-75 transition-opacity"
+              aria-label="Адміністративна панель"
+            >
+              Admin
+            </a>
+        </div>
           <div className="mt-8 pt-8 border-t border-primary-700 text-center text-primary-200">
             © {new Date().getFullYear()} Паломницький центр "Подільський пілігрим". Всі права захищено.
           </div>

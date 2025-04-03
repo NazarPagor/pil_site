@@ -1,27 +1,42 @@
 import { NextResponse } from 'next/server';
+import { verifyAdminPassword, getAdminSecret } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
     const { secretPhrase } = await request.json();
-    const adminSecret = process.env.ADMIN_SECRET;
-
-    if (!adminSecret) {
-      console.error('ADMIN_SECRET is not set');
+    
+    if (!secretPhrase) {
       return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
+        { error: 'Secret phrase is required' },
+        { status: 400 }
       );
     }
 
-    if (secretPhrase === adminSecret) {
-      // Set a secure HTTP-only cookie
+    // Verify the provided secret phrase
+    const isValid = await verifyAdminPassword(secretPhrase);
+
+    if (isValid) {
+      // Get admin secret to set in cookie
+      const adminSecret = await getAdminSecret();
+      
+      if (!adminSecret) {
+        return NextResponse.json(
+          { error: 'Server configuration error' },
+          { status: 500 }
+        );
+      }
+      
+      // Set cookie with the hashed admin secret
       const response = NextResponse.json({ success: true });
-      response.cookies.set('admin_auth', 'true', {
+      response.cookies.set('admin_auth', adminSecret.secret, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 60 * 60 * 24, // 24 hours
       });
+
+    
+
       return response;
     }
 
@@ -32,7 +47,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Server error' },
       { status: 500 }
     );
   }
