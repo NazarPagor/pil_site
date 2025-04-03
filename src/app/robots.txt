@@ -15,7 +15,5 @@ User-agent: *
 Disallow: /*?preview=*
 Disallow: /*?development=*
 
-# Sitemap location
-Sitemap: https://pilgrimage-center.vercel.app/sitemap.xml
 
 # Note: This file is a fallback. The X-Robots-Tag header is also set for preview deployments. 

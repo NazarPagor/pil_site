@@ -8,9 +8,9 @@ interface SiteSettings {
   contactEmail: string;
   contactPhone: string;
   address: string;
-  facebook: string;
-  instagram: string;
-  youtube: string;
+  // facebook: string;
+  // instagram: string;
+  // youtube: string;
   mapEmbedUrl: string;
 }
 
@@ -26,9 +26,9 @@ export default function SettingsPage() {
     contactEmail: '',
     contactPhone: '',
     address: '',
-    facebook: '',
-    instagram: '',
-    youtube: '',
+    // facebook: '',
+    // instagram: '',
+    // youtube: '',
     mapEmbedUrl: '',
   });
 
@@ -43,9 +43,9 @@ export default function SettingsPage() {
           contactEmail: 'info@example.com',
           contactPhone: '+380501234567',
           address: 'м. Львів, вул. Івана Франка, 123',
-          facebook: 'https://facebook.com/pilgrim.center',
-          instagram: 'https://instagram.com/pilgrim.center',
-          youtube: 'https://youtube.com/pilgrim.center',
+          // facebook: 'https://facebook.com/pilgrim.center',
+          // instagram: 'https://instagram.com/pilgrim.center',
+          // youtube: 'https://youtube.com/pilgrim.center',
           mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d82352.70256752667!2d23.917691291386722!3d49.83261223397082!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x473add7c09109a57%3A0x4223c517012378e2!2z0JvRjNCy0ZbQsiwg0JvRjNCy0ZbQstGB0YzQutCwINC-0LHQu9Cw0YHRgtGMLCA3OTAwMA!5e0!3m2!1suk!2sua!4v1633594558264!5m2!1suk!2sua',
         };
         
@@ -241,7 +241,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div>
+          {/* <div>
             <h2 className="text-lg font-medium text-gray-900 mb-4">Соціальні мережі</h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
@@ -302,7 +302,7 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="px-6 py-4 bg-gray-50 text-right">

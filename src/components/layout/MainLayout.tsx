@@ -2,6 +2,7 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 interface MainLayoutProps {
@@ -11,7 +12,7 @@ interface MainLayoutProps {
 const navigation = [
   { name: 'Головна', href: '/' },
   { name: 'Про нас', href: '/about' },
-  { name: 'Заходи', href: '/events' },
+  { name: 'Поїздки', href: '/events' },
   { name: 'Галерея', href: '/gallery' },
   { name: 'Контакти', href: '/contacts' },
 ];
@@ -34,17 +35,24 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <div className="min-h-screen flex flex-col bg-warmGray-50">
       <header 
         className={`fixed w-full z-50 transition-all duration-300 ${
-          scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
+          scrolled ? 'bg-white shadow-md py-2' : 'bg-white/60 backdrop-blur-md py-4'
         }`}
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <Link href="/" className="flex items-center">
+                <Image
+                  src="/logo.png"
+                  alt="Подільський пілігрим"
+                  width={60}
+                  height={60}
+                  className="h-14 w-auto mr-3"
+                />
                 <span className={`text-2xl font-bold transition-colors duration-300 ${
                   scrolled ? 'text-primary-700' : 'text-primary-600'
                 }`}>
-                  Паломницький центр
+                  Подільський пілігрим
                 </span>
               </Link>
             </div>
@@ -58,7 +66,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
                   className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
                     pathname === item.href
                       ? 'text-primary-700 font-semibold'
-                      : 'text-warmGray-600 hover:text-primary-600'
+                      : 'text-warmGray-800 hover:text-primary-600'
                   }`}
                 >
                   {item.name}
@@ -134,8 +142,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
         </nav>
       </header>
 
-      <main className="flex-grow pt-24 pb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow">
+        <div className="mx-auto pt-24">
           {children}
         </div>
       </main>
@@ -144,7 +152,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xl font-semibold mb-4">Паломницький центр</h3>
+              <div className="flex items-center mb-4">
+              
+                <Image
+                  src="/logo.png"
+                  alt="Подільський пілігрим"
+                  width={60}
+                  height={60}
+                  className="h-14 w-auto mr-3"
+                />
+                <h3 className="text-2xl font-semibold">Подільський пілігрим</h3>
+              </div>
               <p className="text-primary-200">
                 Організовуємо духовні подорожі до святих місць для зближення з вірою та традиціями.
               </p>
@@ -152,9 +170,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
             <div>
               <h3 className="text-xl font-semibold mb-4">Контакти</h3>
               <address className="not-italic">
-                <p className="mb-2">вул. Свята, 1, Київ, 01001</p>
-                <p className="mb-2">Телефон: +380 (44) 123-45-67</p>
-                <p>Email: info@pilgrimage-center.com</p>
+                <p className="mb-2">м. Хмельницький</p>
+                <p className="mb-2">Телефон: +380 (12) 345-67-89</p>
+                <p>Email: info@pilgrim.com.ua</p>
               </address>
             </div>
             <div>
@@ -174,7 +192,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-primary-700 text-center text-primary-200">
-            © {new Date().getFullYear()} Паломницький центр. Всі права захищено.
+            © {new Date().getFullYear()} Паломницький центр "Подільський пілігрим". Всі права захищено.
           </div>
         </div>
       </footer>
