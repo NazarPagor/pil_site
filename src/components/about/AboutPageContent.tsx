@@ -136,7 +136,7 @@ export default function AboutPageContent() {
             <AnimateOnScroll animation="animate-slide-in-right" delay={100}>
               <div className="relative rounded-lg overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1544817747-b11e2f3f8329?q=80&w=1974&auto=format&fit=crop"
+                  src="/about_us.jpg"
                   alt="Про наш паломницький центр"
                   width={600}
                   height={400}

@@ -35,7 +35,6 @@ export const metadata: Metadata = {
     apple: '/logo.png',
   },
   viewport: {
-    width: 'device-width',
     initialScale: 1,
   },
   robots: {
@@ -87,52 +86,10 @@ export default function RootLayout({
       <head>
         <link rel="alternate" hrefLang="uk" href={baseUrl} />
         <link rel="alternate" hrefLang="x-default" href={baseUrl} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Подільський пілігрим",
-              "url": baseUrl,
-              "logo": `${baseUrl}/logo.png`,
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+380971234567",
-                "contactType": "customer service",
-                "availableLanguage": ["Ukrainian"]
-              },
-              "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "Хмельницький",
-                "addressCountry": "UA"
-              },
-              // "sameAs": [
-              //   "https://facebook.com/pilgrim.center",
-              //   "https://instagram.com/pilgrim.center"
-              // ]
-            })
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "url": baseUrl,
-              "name": "Подільський пілігрим",
-              "description": "Офіційний сайт Паломницького центру 'Подільський пілігрим'. Організація паломницьких подорожей до святих місць України та світу.",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": `${baseUrl}/search?q={search_term_string}`,
-                "query-input": "required name=search_term_string"
-              }
-            })
-          }}
-        />
       </head>
-      <body><MainLayout>{children}</MainLayout></body>
+      <body>
+        {children}
+      </body>
     </html>
   );
 }

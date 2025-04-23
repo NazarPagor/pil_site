@@ -15,6 +15,7 @@ type EventCard = {
   endDate: string;
   location: string;
   price: string;
+  currency: string;
 };
 
 type RelatedEventsSectionProps = {
@@ -81,7 +82,7 @@ const RelatedEventsSection: React.FC<RelatedEventsSectionProps> = ({ events }) =
                 
                 <div className="flex justify-between items-center">
                   <span className="text-primary-800 font-semibold">
-                    {event.price}
+                    {event.price} {event.currency === 'UAH' ? 'грн' : event.currency === 'USD' ? '$' : '€'}
                   </span>
                   <Link 
                     href={`/events/${event.id}`}

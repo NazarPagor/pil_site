@@ -26,13 +26,10 @@ const nextConfig = {
     // Попередження ESLint не будуть призводити до фатальних помилок під час білду в продакшн режимі
     ignoreDuringBuilds: process.env.NODE_ENV === 'production',
   },
-  // Обмеження кількості роутів які будуть відображатися під час білду в продакшн режимі
-  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
   // Додаткові налаштування для зображень
   images: {
-    domains: ['picsum.photos', 'images.unsplash.com', 'randomuser.me', 'via.placeholder.com'],
+    domains: ['randomuser.me',"res.cloudinary.com" ],
   },
-  // Опції для продакшн білду
   productionBrowserSourceMaps: false,
   swcMinify: true,
   poweredByHeader: false,

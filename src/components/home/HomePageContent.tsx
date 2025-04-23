@@ -119,7 +119,6 @@ export default function HomePageContent() {
         const eventsResponse = await fetch('/api/events');
         const eventsData = await eventsResponse.json();
         const upcomingData = eventsData.filter((event: Event) => event.status === 'upcoming');
-      //  setUpcomingEvents(upcomingData);
         
         // Створення популярних напрямків на основі унікальних місць з подій
         const uniqueLocations = Array.from(
@@ -129,9 +128,9 @@ export default function HomePageContent() {
         const destinations: PopularDestination[] = uniqueLocations.slice(0, 3).map((location: string) => {
           const event = upcomingData.find((event: Event) => event.location === location);
           return {
-            title: location.split(',')[0], // Використовуємо першу частину локації як заголовок
+            title: location.split(',')[0], 
             location: location,
-            image: event?.image || 'https://images.unsplash.com/photo-1577338149561-1fa5166efdc2?q=80&w=2070&auto=format&fit=crop'
+            image: event?.image
           };
         });
         setPopularDestinations(destinations);
@@ -173,7 +172,7 @@ export default function HomePageContent() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=1776&auto=format&fit=crop"
+            src="/sk2.jpg"
             alt="Паломницький центр"
             fill
             className="object-cover brightness-75"
@@ -299,70 +298,102 @@ export default function HomePageContent() {
         </div>
       </section>
 
-      {/* Популярні напрямки */}
+      {/* Наші цінності */}
       <section className="bg-warmGray-100 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <AnimateOnScroll animation="animate-fade-in">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-2 text-primary-900 drop-shadow-sm">
-                {homePage?.destinationsTitle || "Популярні напрямки"}
+                Наші цінності
               </h2>
               <div className="w-20 h-1 bg-primary-600 mx-auto mb-6 rounded-full"></div>
               <p className="text-lg text-warmGray-600 max-w-3xl mx-auto">
-                {homePage?.destinationsDescription || 
-                  "Відвідайте святі місця, що надихають мільйони паломників по всьому світу"}
+                Ми прагнемо втілювати християниські цінності в кожній подорожі та будувати спільноту однодумців
               </p>
             </div>
           </AnimateOnScroll>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {popularDestinations.map((destination, index) => (
-              <AnimateOnScroll key={index} animation="animate-zoom-in" delay={index * 100}>
-                <div className="relative rounded-xl overflow-hidden group">
-                  <div className="aspect-[4/3] relative">
-                    <Image
-                      src={destination.image}
-                      alt={destination.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-xl font-bold mb-2">{destination.title}</h3>
-                    <p className="text-sm text-white/80">{destination.location}</p>
-                  </div>
+            <AnimateOnScroll animation="animate-zoom-in" delay={100}>
+              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
                 </div>
-              </AnimateOnScroll>
-            ))}
+                <h3 className="text-xl font-semibold mb-4 text-primary-900">Любов</h3>
+                <p className="text-warmGray-600 leading-relaxed">
+                  Любов до Бога та ближнього є основою нашого служіння. Ми створюємо атмосферу любові та підтримки під час кожної подорожі.
+                </p>
+              </div>
+            </AnimateOnScroll>
+            
+            <AnimateOnScroll animation="animate-zoom-in" delay={200}>
+              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-primary-900">Віра</h3>
+                <p className="text-warmGray-600 leading-relaxed">
+                  Віра є джерелом нашої сили та наснаги. Ми створюємо умови для поглиблення віри через духовне збагачення під час паломництва.
+                </p>
+              </div>
+            </AnimateOnScroll>
+            
+            <AnimateOnScroll animation="animate-zoom-in" delay={300}>
+              <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                  <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-primary-900">Спільнота</h3>
+                <p className="text-warmGray-600 leading-relaxed">
+                  Ми будуємо спільноту однодумців, де кожен може відчути єдність з братами і сестрами у вірі, поділитися своїм досвідом і здобути нові знайомства.
+                </p>
+              </div>
+            </AnimateOnScroll>
           </div>
 
           <div className="text-center mt-10">
             <Link
-              href="/events"
+              href="/about"
               className="inline-block bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-md font-medium transition-colors"
             >
-              Переглянути всі напрямки
+              Дізнатися більше про нас
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Карусель з відгуками */}
-      <section className="max-w-5xl mx-auto px-4">
-        <AnimateOnScroll animation="animate-fade-in">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-2 text-primary-900 drop-shadow-sm">
-              {homePage?.testimonialTitle || "Відгуки паломників"}
-            </h2>
-            <div className="w-20 h-1 bg-primary-600 mx-auto mb-6 rounded-full"></div>
-          </div>
-        </AnimateOnScroll>
-
-        <div className="relative">
-          <div className="overflow-hidden h-[350px]">
-            <div className="grid grid-cols-1 gap-8">
-              {testimonials.length > 0 ? testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className={`
+      {/* CTA Section */}
+      <section className="bg-primary-600 text-white py-16">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <AnimateOnScroll animation="animate-zoom-in">
+            <h2 className="text-3xl font-bold mb-6">{homePage?.ctaTitle || "Готові до духовної подорожі?"}</h2>
+            <p className="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
+              {homePage?.ctaDescription || 
+                "Приєднуйтеся до наших паломницьких поїздок і відкрийте для себе глибину духовного досвіду"}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/events"
+                className="bg-white text-primary-700 px-8 py-4 rounded-md font-medium hover:bg-primary-50 transition-colors"
+              >
+                Знайти поїздку
+              </Link>
+              <Link
+                href="/contacts"
+                className="bg-transparent border-2 border-white hover:bg-white/10 text-white px-8 py-4 rounded-md font-medium transition-colors"
+              >
+                Зв&apos;язатися з нами
+              </Link>
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+    </div>
+  );
+} 

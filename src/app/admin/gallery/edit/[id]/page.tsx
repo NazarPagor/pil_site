@@ -1,93 +1,91 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface GalleryImage {
-  id: string;
+  id?: string;
   url: string;
   alt: string;
 }
 
 interface GalleryData {
+  id: string;
   title: string;
   description: string;
-  coverImage: File | null;
+  coverImage: string;
   images: GalleryImage[];
 }
 
 export default function EditGalleryPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { id } = params;
-  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [gallery, setGallery] = useState<GalleryData | null>(null);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [coverImage, setCoverImage] = useState('');
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{ file: File, preview: string, alt: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
-  const [newImages, setNewImages] = useState<File[]>([]);
-  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+  const [uploadType, setUploadType] = useState<'url' | 'file'>('url');
   
-  const [gallery, setGallery] = useState<GalleryData>({
-    title: '',
-    description: '',
-    coverImage: null,
-    images: [],
-  });
-
   useEffect(() => {
-    const fetchGallery = async () => {
-      try {
-        setIsLoading(true);
-        // В майбутньому замінити на реальний API-запит
-        
-        // Імітація отримання даних з API
-        setTimeout(() => {
-          // Припустимо, що ці дані приходять з сервера
-          const galleryData = {
-            title: 'Проща до Зарваниці 2023',
-            description: 'Фотографії з щорічної прощі до Зарваниці - одного з найбільших місць паломництва в Україні.',
-            coverImageUrl: 'https://via.placeholder.com/300x200',
-            images: [
-              { id: '1', url: 'https://via.placeholder.com/800x600?text=Image1', alt: 'Паломники біля каплиці' },
-              { id: '2', url: 'https://via.placeholder.com/800x600?text=Image2', alt: 'Служба Божа' },
-              { id: '3', url: 'https://via.placeholder.com/800x600?text=Image3', alt: 'Спільна молитва' },
-              { id: '4', url: 'https://via.placeholder.com/800x600?text=Image4', alt: 'Вечірнє богослужіння' },
-            ],
-          };
-          
-          setGallery({
-            title: galleryData.title,
-            description: galleryData.description,
-            coverImage: null,
-            images: galleryData.images,
-          });
-          
-          setCoverImagePreview(galleryData.coverImageUrl);
-          setIsLoading(false);
-        }, 500);
-      } catch (error) {
-        console.error('Помилка завантаження даних:', error);
-        setError('Помилка завантаження даних про галерею. Спробуйте знову пізніше.');
-        setIsLoading(false);
+    if (params.id) {
+      fetchGallery();
+    }
+  }, [params.id]);
+  
+  const fetchGallery = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/galleries/${params.id}`);
+      
+      if (!response.ok) {
+        throw new Error('Не вдалося завантажити дані галереї');
       }
-    };
-
-    fetchGallery();
-  }, [id]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setGallery(prev => ({ ...prev, [name]: value }));
+      
+      const data = await response.json();
+      setGallery(data);
+      setTitle(data.title);
+      setDescription(data.description || '');
+      setCoverImage(data.coverImage);
+      setImages(data.images || []);
+    } catch (err) {
+      console.error('Помилка завантаження галереї:', err);
+      setError('Не вдалося завантажити дані галереї');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const addImageField = () => {
+    setImages([...images, { url: '', alt: '' }]);
+  };
+  
+  const removeImageField = (index: number) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
+  
+  const updateImageField = (index: number, field: 'url' | 'alt', value: string) => {
+    const newImages = [...images];
+    newImages[index][field] = value;
+    setImages(newImages);
   };
 
-  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setGallery(prev => ({ ...prev, coverImage: file }));
+      setCoverImageFile(file);
       
-      // Create a preview
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setCoverImagePreview(reader.result as string);
@@ -96,254 +94,569 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
     }
   };
 
-  const handleNewImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImagesFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const filesArray = Array.from(e.target.files);
-      setNewImages(prev => [...prev, ...filesArray]);
-      
-      // Create previews
-      const newPreviews: string[] = [];
-      filesArray.forEach(file => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          newPreviews.push(reader.result as string);
-          if (newPreviews.length === filesArray.length) {
-            setNewImagePreviews(prev => [...prev, ...newPreviews]);
-          }
-        };
-        reader.readAsDataURL(file);
+      const newFiles = Array.from(e.target.files).map(file => {
+        // Create preview for each file
+        return new Promise<{ file: File, preview: string, alt: string }>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve({
+              file,
+              preview: reader.result as string,
+              alt: file.name.split('.')[0] // Use filename without extension as alt text
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(newFiles).then(files => {
+        setUploadedFiles(prev => [...prev, ...files]);
       });
     }
   };
 
-  const handleRemoveExistingImage = (imageId: string) => {
-    setGallery(prev => ({
-      ...prev,
-      images: prev.images.filter(img => img.id !== imageId)
-    }));
+  const removeUploadedFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleRemoveNewImage = (index: number) => {
-    setNewImages(prev => prev.filter((_, i) => i !== index));
-    setNewImagePreviews(prev => prev.filter((_, i) => i !== index));
+  const updateUploadedFileAlt = (index: number, alt: string) => {
+    const newFiles = [...uploadedFiles];
+    newFiles[index].alt = alt;
+    setUploadedFiles(newFiles);
   };
 
+  // Реальне завантаження файлів на сервер через Cloudinary
+  const uploadFilesToServer = async (files: File[]) => {
+    const uploadedImages = [];
+    
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Не вдалося завантажити зображення');
+        }
+        
+        const uploadData = await uploadResponse.json();
+        const fileInUploadedFiles = uploadedFiles.find(f => f.file === file);
+        
+        uploadedImages.push({
+          url: uploadData.url,
+          alt: fileInUploadedFiles?.alt || file.name.split('.')[0]
+        });
+      } catch (error) {
+        console.error('Помилка завантаження зображення:', error);
+        throw error;
+      }
+    }
+    
+    return uploadedImages;
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
+    
+    // Базова валідація
+    if (!title) {
+      setError('Назва галереї обов\'язкова');
+      return;
+    }
+    
+    if (!coverImage && !coverImageFile) {
+      setError('Обкладинка галереї обов\'язкова');
+      return;
+    }
+    
+    // Перевіряємо наявність зображень
+    const validUrlImages = images.filter(img => img.url.trim() !== '');
+    
+    if (validUrlImages.length === 0 && uploadedFiles.length === 0) {
+      setError('Додайте хоча б одне зображення');
+      return;
+    }
+    
     try {
-      // Валідація форми
-      if (!gallery.title || !gallery.description) {
-        throw new Error('Будь ласка, заповніть всі обов\'язкові поля');
+      setIsSubmitting(true);
+      setError(null);
+      
+      // Підготовлюємо дані для відправки
+      let finalCoverImage = coverImage;
+      let finalImages = [...validUrlImages];
+      
+      // Якщо є завантажені файли, імітуємо їх завантаження на сервер
+      if (uploadedFiles.length > 0) {
+        const uploadedImages = await uploadFilesToServer(uploadedFiles.map(f => f.file));
+        finalImages = [...finalImages, ...uploadedImages];
       }
-
-      // Тут буде реальний API-запит у майбутньому
-      console.log('Дані галереї для оновлення:', {
-        ...gallery,
-        newImages: newImages,
+      
+      // Якщо є завантажена обкладинка, завантажуємо її на сервер
+      if (coverImageFile) {
+        const formData = new FormData();
+        formData.append('file', coverImageFile);
+        
+        try {
+          const uploadResponse = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!uploadResponse.ok) {
+            throw new Error('Не вдалося завантажити обкладинку');
+          }
+          
+          const uploadData = await uploadResponse.json();
+          finalCoverImage = uploadData.url;
+        } catch (error) {
+          console.error('Помилка завантаження обкладинки:', error);
+          setError('Не вдалося завантажити обкладинку. Спробуйте знову.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+      
+      const response = await fetch(`/api/galleries/${params.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          coverImage: finalCoverImage,
+          images: finalImages,
+        }),
       });
       
-      // Імітація відправки запиту
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Не вдалося оновити галерею');
+      }
       
-      // Перенаправлення на сторінку галерей
       router.push('/admin/gallery');
-    } catch (error) {
-      console.error('Помилка відправки форми:', error);
-      setError(error instanceof Error ? error.message : 'Виникла помилка при оновленні галереї');
+      router.refresh();
+    } catch (err) {
+      console.error('Помилка оновлення галереї:', err);
+      setError('Не вдалося оновити галерею. Спробуйте знову.');
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-secondary-600"></div>
       </div>
     );
   }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-primary-800">Редагування галереї</h1>
-        <Link 
-          href="/admin/gallery" 
-          className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md"
-        >
-          Повернутися до списку
-        </Link>
-      </div>
-
-      {error && (
-        <div className="bg-red-50 p-4 rounded-md">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{error}</h3>
-            </div>
+  
+  if (error && !gallery) {
+    return (
+      <div className="bg-red-50 p-4 rounded-md">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-red-800">{error}</h3>
           </div>
         </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-8">
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900">Редагування галереї</h1>
+        <Link
+          href="/admin/gallery"
+          className="px-3 py-1.5 md:px-4 md:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm"
+        >
+          Назад
+        </Link>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Основна інформація */}
-        <div className="space-y-6">
-          <h2 className="text-lg font-medium text-gray-900">Основна інформація</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Основна інформація</h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Назва галереї *
+                Назва галереї <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 id="title"
-                name="title"
-                value={gallery.title}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-500"
-                required
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className={`w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 ${!title && 'border-red-300 bg-red-50'}`}
+                placeholder="Введіть назву галереї"
               />
+              {!title && <p className="mt-1 text-sm text-red-600">Назва галереї обов'язкова</p>}
             </div>
-
-            <div className="md:col-span-2">
+            <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Опис галереї *
+                Опис галереї
               </label>
               <textarea
                 id="description"
-                name="description"
-                value={gallery.description}
-                onChange={handleChange}
+                value={description}
+                onChange={e => setDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary-500"
-                required
-              ></textarea>
-            </div>
-
-            <div>
-              <label htmlFor="coverImage" className="block text-sm font-medium text-gray-700 mb-1">
-                Обкладинка галереї
-              </label>
-              <input
-                type="file"
-                id="coverImage"
-                name="coverImage"
-                accept="image/*"
-                onChange={handleCoverImageChange}
-                className="w-full"
+                className="w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Введіть опис галереї"
               />
-              {coverImagePreview && (
-                <div className="mt-2">
-                  <img src={coverImagePreview} alt="Обкладинка галереї" className="h-40 object-cover rounded-md" />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Поточне зображення обкладинки. Завантажте нове, щоб замінити.
-                  </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Обкладинка галереї */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Обкладинка галереї <span className="text-red-500">*</span></h2>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setUploadType('url')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    uploadType === 'url' 
+                      ? 'bg-primary-100 text-primary-700 border border-primary-300' 
+                      : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                  }`}
+                >
+                  URL зображення
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadType('file')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    uploadType === 'file' 
+                      ? 'bg-primary-100 text-primary-700 border border-primary-300' 
+                      : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                  }`}
+                >
+                  Завантажити файл
+                </button>
+              </div>
+
+              {uploadType === 'url' ? (
+                <div>
+                  <label htmlFor="coverImage" className="block text-sm font-medium text-gray-700 mb-1">
+                    URL обкладинки <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="coverImage"
+                    value={coverImage}
+                    onChange={e => setCoverImage(e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 ${!coverImage && !coverImageFile && 'border-red-300 bg-red-50'}`}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  {!coverImage && !coverImageFile && (
+                    <p className="mt-1 text-sm text-red-600">Завантажте обкладинку галереї</p>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center space-x-4">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors flex items-center"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      Вибрати файл
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleCoverImageFileChange}
+                    />
+                    {coverImageFile && (
+                      <span className="text-sm text-gray-600">
+                        {coverImageFile.name} ({Math.round(coverImageFile.size / 1024)} KB)
+                      </span>
+                    )}
+                  </div>
+                  {!coverImage && !coverImageFile && (
+                    <p className="mt-1 text-sm text-red-600">Завантажте обкладинку галереї</p>
+                  )}
+                </div>
+              )}
+
+              {(coverImage || coverImagePreview) && (
+                <div className="mt-4 border rounded-md p-4 bg-gray-50">
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">Перегляд обкладинки:</h3>
+                  <div className="w-full h-56 relative rounded-md overflow-hidden border bg-white">
+                    {coverImagePreview ? (
+                      <img 
+                        src={coverImagePreview} 
+                        alt="Перегляд" 
+                        className="w-full h-full object-contain" 
+                      />
+                    ) : coverImage ? (
+                      <img 
+                        src={coverImage} 
+                        alt="Перегляд" 
+                        className="w-full h-full object-contain" 
+                      />
+                    ) : null}
+                  </div>
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        {/* Управління існуючими зображеннями */}
-        <div className="space-y-6 pt-6 border-t">
-          <h2 className="text-lg font-medium text-gray-900">Управління зображеннями</h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {gallery.images.map(image => (
-              <div key={image.id} className="group relative">
-                <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-gray-100">
-                  <Image
-                    src={image.url}
-                    alt={image.alt}
-                    width={300}
-                    height={225}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveExistingImage(image.id)}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-                <p className="mt-1 text-xs text-gray-500 truncate">{image.alt}</p>
-              </div>
-            ))}
+        
+        {/* Зображення для галереї */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">Зображення для галереї <span className="text-red-500">*</span></h2>
           </div>
-        </div>
+          <div className="p-6 space-y-6">
+            <div className="flex space-x-4 mb-6">
+              <button
+                type="button"
+                onClick={() => setUploadType('url')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  uploadType === 'url' 
+                    ? 'bg-primary-100 text-primary-700 border border-primary-300' 
+                    : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                }`}
+              >
+                URL зображень
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadType('file')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  uploadType === 'file' 
+                    ? 'bg-primary-100 text-primary-700 border border-primary-300' 
+                    : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                }`}
+              >
+                Завантажити файли
+              </button>
+            </div>
 
-        {/* Додавання нових зображень */}
-        <div className="space-y-6 pt-6 border-t">
-          <h2 className="text-lg font-medium text-gray-900">Додати нові зображення</h2>
-          
-          <div>
-            <label htmlFor="newImages" className="block text-sm font-medium text-gray-700 mb-1">
-              Завантажити зображення
-            </label>
-            <input
-              type="file"
-              id="newImages"
-              name="newImages"
-              accept="image/*"
-              multiple
-              onChange={handleNewImagesChange}
-              className="w-full"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Ви можете вибрати декілька файлів одночасно.
-            </p>
-          </div>
-
-          {newImagePreviews.length > 0 && (
-            <div className="mt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Нові зображення для завантаження:</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {newImagePreviews.map((preview, index) => (
-                  <div key={index} className="group relative">
-                    <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-gray-100">
-                      <img src={preview} alt={`New upload ${index + 1}`} className="object-cover w-full h-full" />
+            {uploadType === 'url' ? (
+              <>
+                <div className="space-y-4">
+                  {images.map((image, index) => (
+                    <div key={index} className="border rounded-md p-4 bg-gray-50">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-sm font-medium text-gray-700">Зображення {index + 1}</h3>
+                        <button
+                          type="button"
+                          onClick={() => removeImageField(index)}
+                          className="text-red-500 hover:text-red-700"
+                          disabled={images.length === 1 && uploadedFiles.length === 0}
+                        >
+                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <label htmlFor={`imageUrl${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+                            URL зображення <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id={`imageUrl${index}`}
+                            value={image.url}
+                            onChange={e => updateImageField(index, 'url', e.target.value)}
+                            className={`w-full px-3 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 ${!image.url && 'border-red-300 bg-red-50'}`}
+                            placeholder="https://example.com/image.jpg"
+                          />
+                          {!image.url && (
+                            <p className="mt-1 text-sm text-red-600">URL зображення обов'язковий</p>
+                          )}
+                        </div>
+                        <div>
+                          <label htmlFor={`imageAlt${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+                            Опис зображення
+                          </label>
+                          <input
+                            type="text"
+                            id={`imageAlt${index}`}
+                            value={image.alt}
+                            onChange={e => updateImageField(index, 'alt', e.target.value)}
+                            className="w-full px-3 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="Опис зображення для альтернативного тексту"
+                          />
+                        </div>
+                      </div>
+                      {image.url && (
+                        <div className="mt-4">
+                          <h4 className="text-xs font-medium text-gray-500 mb-1">Перегляд:</h4>
+                          <div className="w-full h-40 relative rounded-md overflow-hidden border bg-white">
+                            <img 
+                              src={image.url} 
+                              alt={image.alt || `Зображення ${index + 1}`} 
+                              className="w-full h-full object-contain" 
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
+                  ))}
+                </div>
+
+                <div className="pt-4">
+                  <button
+                    type="button"
+                    onClick={addImageField}
+                    className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors text-sm font-medium"
+                  >
+                    <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Додати ще зображення
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <div className="flex items-center space-x-4 mb-4">
                     <button
                       type="button"
-                      onClick={() => handleRemoveNewImage(index)}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => document.getElementById('multipleFileInput')?.click()}
+                      className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors flex items-center"
                     >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                       </svg>
+                      Вибрати файли
                     </button>
+                    <input
+                      id="multipleFileInput"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={handleImagesFileChange}
+                    />
+                    <p className="text-sm text-gray-500">Можна вибрати декілька файлів одночасно</p>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
 
-        <div className="flex justify-end space-x-3 pt-6 border-t">
+                  {uploadedFiles.length === 0 && images.filter(img => img.url).length === 0 && (
+                    <p className="text-sm text-red-600">Додайте хоча б одне зображення</p>
+                  )}
+                </div>
+
+                {uploadedFiles.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-medium text-gray-700">Завантажені файли:</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {uploadedFiles.map((file, index) => (
+                        <div key={index} className="border rounded-md p-3 bg-white shadow-sm">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                              {file.file.name}
+                            </h4>
+                            <button
+                              type="button"
+                              onClick={() => removeUploadedFile(index)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                          <div className="w-full h-32 mb-2 relative rounded-md overflow-hidden border bg-gray-50">
+                            <img 
+                              src={file.preview} 
+                              alt={file.alt} 
+                              className="w-full h-full object-contain" 
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor={`fileAlt${index}`} className="block text-xs font-medium text-gray-700 mb-1">
+                              Опис зображення
+                            </label>
+                            <input
+                              type="text"
+                              id={`fileAlt${index}`}
+                              value={file.alt}
+                              onChange={e => updateUploadedFileAlt(index, e.target.value)}
+                              className="w-full px-2 py-1 text-sm border rounded-md focus:ring-primary-500 focus:border-primary-500"
+                              placeholder="Опис зображення"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+        
+        {/* Кнопки відправки форми */}
+        <div className="flex justify-end space-x-4">
           <Link
             href="/admin/gallery"
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
           >
             Скасувати
           </Link>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2 bg-secondary-600 text-white rounded-md hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 disabled:opacity-50"
+            className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors flex items-center disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Збереження...' : 'Зберегти зміни'}
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Збереження...
+              </>
+            ) : (
+              <>Зберегти зміни</>
+            )}
           </button>
         </div>
       </form>

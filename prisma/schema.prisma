@@ -21,17 +21,28 @@ model Event {
   id                  String        @id @default(cuid())
   title               String
   description         String
+  longDescription     String        @db.Text
   startDate           DateTime
   endDate             DateTime
   location            String
+  locationDescription String?       @db.Text
+  locationLat         Float?
+  locationLng         Float?
   price               Int
+  currency            String        @default("UAH")
   maxParticipants     Int
   currentParticipants Int           @default(0)
+  availablePlaces     Int?
+  duration            String?
   image               String
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  galleryImages       String[]
   difficulty          String
   includes            String[]
+  notIncluded         String[]
+  documentsRequired   String[]
+  scheduleData        Json?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
   status              String        @default("upcoming")
   participants        Participant[]
 }
