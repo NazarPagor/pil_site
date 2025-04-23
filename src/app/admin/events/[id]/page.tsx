@@ -605,7 +605,7 @@ export default function EventEditRedirect({ params }: { params: { id: string } }
         </div>
 
         {/* Галерея */}
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-primary-700 border-b pb-2">Галерея зображень</h2>
           <p className="text-sm text-gray-600 mb-4">
             Додайте зображення для галереї поїздки. Можна додати URL-адреси зображень.
@@ -639,7 +639,7 @@ export default function EventEditRedirect({ params }: { params: { id: string } }
               Додати зображення
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
       
       <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
