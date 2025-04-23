@@ -6,15 +6,13 @@ import { CalendarIcon, MapPinIcon, CurrencyDollarIcon, ClockIcon, UserGroupIcon 
 import { format, parseISO } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import EventTabs from './EventTabs';
-import ReviewsSection from './ReviewsSection';
-import RelatedEventsSection from './RelatedEventsSection';
 import EventActionSidebar from './EventActionSidebar';
 
 type EventDetailProps = {
   eventId: string;
 };
 
-// Формат даних для API події
+
 interface Event {
   id: string;
   title: string;
@@ -40,56 +38,13 @@ interface Event {
   scheduleData?: any;
 }
 
-// Демо-дані для схожих поїздок (в майбутньому можна також отримувати з API)
-const getRelatedEvents = (currentEventId: string) => {
-  const allEvents = [
-    {
-      id: 'holy-land-2024',
-      title: 'Паломництво до Святої Землі',
-      image: '/images/events/holy-land.jpg',
-      startDate: '2024-08-15T08:00:00+03:00',
-      endDate: '2024-08-22T20:00:00+03:00',
-      location: 'Єрусалим, Ізраїль',
-      price: '45000 UAH'
-    },
-    {
-      id: 'zarvanytsia-2024',
-      title: 'Паломництво до Зарваниці',
-      image: '/images/events/zarvanytsia.jpg',
-      startDate: '2024-07-20T07:00:00+03:00',
-      endDate: '2024-07-21T19:00:00+03:00',
-      location: 'Зарваниця, Тернопільська область',
-      price: '800 UAH'
-    },
-    {
-      id: 'pochaiv-2024',
-      title: 'Паломництво до Почаєва',
-      image: '/images/events/pochaiv.jpg',
-      startDate: '2024-06-15T07:00:00+03:00',
-      endDate: '2024-06-15T21:00:00+03:00',
-      location: 'Почаїв, Тернопільська область',
-      price: '400 UAH'
-    },
-    {
-      id: 'medjugorje-2024',
-      title: 'Паломництво до Меджугорє',
-      image: '/images/events/medjugorje.jpg',
-      startDate: '2024-09-10T05:00:00+03:00',
-      endDate: '2024-09-17T22:00:00+03:00',
-      location: 'Меджугорє, Боснія і Герцеговина',
-      price: '32000 UAH'
-    }
-  ];
-  
-  // Повертаємо всі події, крім поточної
-  return allEvents.filter(event => event.id !== currentEventId);
-};
+
 
 const EventDetailPageContent = ({ eventId }: EventDetailProps) => {
   const [event, setEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const relatedEvents = getRelatedEvents(eventId);
+
   
   useEffect(() => {
     async function fetchEventData() {
@@ -292,15 +247,7 @@ const EventDetailPageContent = ({ eventId }: EventDetailProps) => {
                   )}
                 </ul>
               </div>
-            </div>
-            
-            {/* Відгуки - в майбутньому також можуть бути отримані з API */}
-            <ReviewsSection reviews={[]} eventName={event.title} />
-            
-            {/* Схожі поїздки */}
-            {relatedEvents.length > 0 && (
-              <RelatedEventsSection events={relatedEvents} />
-            )}
+            </div>    
           </div>
           
           {/* Бічна панель */}

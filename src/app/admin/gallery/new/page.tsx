@@ -1,79 +1,39 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface GalleryImage {
-  id?: string;
+interface ImageData {
   url: string;
   alt: string;
 }
 
-interface GalleryData {
-  id: string;
-  title: string;
-  description: string;
-  coverImage: string;
-  images: GalleryImage[];
-}
-
-export default function EditGalleryPage({ params }: { params: { id: string } }) {
+export default function NewGalleryPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [gallery, setGallery] = useState<GalleryData | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
-  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [images, setImages] = useState<ImageData[]>([{ url: '', alt: '' }]);
   const [uploadedFiles, setUploadedFiles] = useState<{ file: File, preview: string, alt: string }[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadType, setUploadType] = useState<'url' | 'file'>('url');
-  
-  useEffect(() => {
-    if (params.id) {
-      fetchGallery();
-    }
-  }, [params.id]);
-  
-  const fetchGallery = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/galleries/${params.id}`);
-      
-      if (!response.ok) {
-        throw new Error('Не вдалося завантажити дані галереї');
-      }
-      
-      const data = await response.json();
-      setGallery(data);
-      setTitle(data.title);
-      setDescription(data.description || '');
-      setCoverImage(data.coverImage);
-      setImages(data.images || []);
-    } catch (err) {
-      console.error('Помилка завантаження галереї:', err);
-      setError('Не вдалося завантажити дані галереї');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
+
   const addImageField = () => {
     setImages([...images, { url: '', alt: '' }]);
   };
-  
+
   const removeImageField = (index: number) => {
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
   };
-  
+
   const updateImageField = (index: number, field: 'url' | 'alt', value: string) => {
     const newImages = [...images];
     newImages[index][field] = value;
@@ -139,7 +99,7 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
       };
     });
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -182,8 +142,8 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
         finalCoverImage = uploadedCover;
       }
       
-      const response = await fetch(`/api/galleries/${params.id}`, {
-        method: 'PUT',
+      const response = await fetch('/api/galleries', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -197,48 +157,23 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Не вдалося оновити галерею');
+        throw new Error(errorData.error || 'Не вдалося створити галерею');
       }
       
       router.push('/admin/gallery');
       router.refresh();
     } catch (err) {
-      console.error('Помилка оновлення галереї:', err);
-      setError('Не вдалося оновити галерею. Спробуйте знову.');
+      console.error('Помилка створення галереї:', err);
+      setError('Не вдалося створити галерею. Спробуйте знову.');
     } finally {
       setIsSubmitting(false);
     }
   };
-  
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-secondary-600"></div>
-      </div>
-    );
-  }
-  
-  if (error && !gallery) {
-    return (
-      <div className="bg-red-50 p-4 rounded-md">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">{error}</h3>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-        <h1 className="text-xl md:text-2xl font-bold text-gray-900">Редагування галереї</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900">Створення нової галереї</h1>
         <Link
           href="/admin/gallery"
           className="px-3 py-1.5 md:px-4 md:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm"
@@ -330,7 +265,7 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
                   Завантажити файл
                 </button>
               </div>
-
+              
               {uploadType === 'url' ? (
                 <div>
                   <label htmlFor="coverImage" className="block text-sm font-medium text-gray-700 mb-1">
@@ -379,7 +314,7 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
                   )}
                 </div>
               )}
-
+              
               {(coverImage || coverImagePreview) && (
                 <div className="mt-4 border rounded-md p-4 bg-gray-50">
                   <h3 className="text-sm font-medium text-gray-700 mb-2">Перегляд обкладинки:</h3>
@@ -434,7 +369,7 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
                 Завантажити файли
               </button>
             </div>
-
+            
             {uploadType === 'url' ? (
               <>
                 <div className="space-y-4">
@@ -499,7 +434,7 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
                     </div>
                   ))}
                 </div>
-
+                
                 <div className="pt-4">
                   <button
                     type="button"
@@ -537,12 +472,12 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
                     />
                     <p className="text-sm text-gray-500">Можна вибрати декілька файлів одночасно</p>
                   </div>
-
+                  
                   {uploadedFiles.length === 0 && images.filter(img => img.url).length === 0 && (
                     <p className="text-sm text-red-600">Додайте хоча б одне зображення</p>
                   )}
                 </div>
-
+                
                 {uploadedFiles.length > 0 && (
                   <div className="space-y-4">
                     <h3 className="text-sm font-medium text-gray-700">Завантажені файли:</h3>
@@ -612,10 +547,10 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Збереження...
+                Створення...
               </>
             ) : (
-              <>Зберегти зміни</>
+              <>Створити галерею</>
             )}
           </button>
         </div>

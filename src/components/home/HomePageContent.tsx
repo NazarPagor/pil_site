@@ -119,7 +119,6 @@ export default function HomePageContent() {
         const eventsResponse = await fetch('/api/events');
         const eventsData = await eventsResponse.json();
         const upcomingData = eventsData.filter((event: Event) => event.status === 'upcoming');
-      //  setUpcomingEvents(upcomingData);
         
         // Створення популярних напрямків на основі унікальних місць з подій
         const uniqueLocations = Array.from(
@@ -129,7 +128,7 @@ export default function HomePageContent() {
         const destinations: PopularDestination[] = uniqueLocations.slice(0, 3).map((location: string) => {
           const event = upcomingData.find((event: Event) => event.location === location);
           return {
-            title: location.split(',')[0], // Використовуємо першу частину локації як заголовок
+            title: location.split(',')[0], 
             location: location,
             image: event?.image || 'https://images.unsplash.com/photo-1577338149561-1fa5166efdc2?q=80&w=2070&auto=format&fit=crop'
           };
@@ -365,4 +364,84 @@ export default function HomePageContent() {
               {testimonials.length > 0 ? testimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className={`
+                  className={`absolute w-full transition-all duration-500 ${
+                    index === activeTestimonial 
+                      ? "opacity-100 translate-y-0" 
+                      : "opacity-0 translate-y-8"
+                  }`}
+                >
+                  <div className="bg-white p-8 rounded-xl shadow-md border border-warmGray-100">
+                    <div className="flex flex-col items-center">
+                      <div className="w-20 h-20 rounded-full overflow-hidden mb-4 border-2 border-primary-600">
+                        <Image
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          width={80}
+                          height={80}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <p className="text-lg text-warmGray-700 italic mb-6 text-center">
+                        &quot;{testimonial.text}&quot;
+                      </p>
+                      <h4 className="text-primary-900 font-semibold">{testimonial.name}</h4>
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="bg-white p-8 rounded-xl shadow-md border border-warmGray-100">
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg text-warmGray-700 italic mb-6 text-center">
+                    &quot;Паломництво до Святої Землі назавжди змінило моє життя. Завдяки професійній організації та духовному супроводу я змогла повністю зануритися у цю неповторну подорож.&quot;
+                    </p>
+                    <h4 className="text-primary-900 font-semibold">Марія Петренко</h4>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex justify-center mt-4 space-x-2">
+            {testimonials.length > 0 && testimonials.map((_, index) => (
+              <button
+                key={index}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  index === activeTestimonial ? "bg-primary-600" : "bg-warmGray-300"
+                }`}
+                onClick={() => setActiveTestimonial(index)}
+                aria-label={`Відгук ${index + 1}`}
+              ></button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-primary-600 text-white py-16">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <AnimateOnScroll animation="animate-zoom-in">
+            <h2 className="text-3xl font-bold mb-6">{homePage?.ctaTitle || "Готові до духовної подорожі?"}</h2>
+            <p className="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
+              {homePage?.ctaDescription || 
+                "Приєднуйтеся до наших паломницьких поїздок і відкрийте для себе глибину духовного досвіду"}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/events"
+                className="bg-white text-primary-700 px-8 py-4 rounded-md font-medium hover:bg-primary-50 transition-colors"
+              >
+                Знайти поїздку
+              </Link>
+              <Link
+                href="/contacts"
+                className="bg-transparent border-2 border-white hover:bg-white/10 text-white px-8 py-4 rounded-md font-medium transition-colors"
+              >
+                Зв&apos;язатися з нами
+              </Link>
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+    </div>
+  );
+} 
