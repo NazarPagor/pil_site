@@ -130,7 +130,7 @@ export default function HomePageContent() {
           return {
             title: location.split(',')[0], 
             location: location,
-            image: event?.image || 'https://images.unsplash.com/photo-1577338149561-1fa5166efdc2?q=80&w=2070&auto=format&fit=crop'
+            image: event?.image
           };
         });
         setPopularDestinations(destinations);

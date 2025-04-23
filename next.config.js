@@ -28,7 +28,7 @@ const nextConfig = {
   },
   // Додаткові налаштування для зображень
   images: {
-    domains: ['picsum.photos', 'images.unsplash.com', 'randomuser.me', 'via.placeholder.com', "plus.unsplash.com", "unsplash.com"],
+    domains: ['randomuser.me',"res.cloudinary.com" ],
   },
   productionBrowserSourceMaps: false,
   swcMinify: true,

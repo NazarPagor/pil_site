@@ -68,17 +68,38 @@ export default function NewGalleryPage() {
     setUploadedFiles(newFiles);
   };
 
-  // Заглушка імітації завантаження на сервер
+  // Реальне завантаження файлів на сервер через Cloudinary
   const uploadFilesToServer = async (files: File[]) => {
-    // Тут буде реальне завантаження файлів на сервер
-    // Наразі просто повертаємо preview URLs для демонстрації
-    return files.map((file, index) => {
-      const fileInUploadedFiles = uploadedFiles.find(f => f.file === file);
-      return {
-        url: fileInUploadedFiles?.preview || '',
-        alt: fileInUploadedFiles?.alt || `Image ${index + 1}`
-      };
-    });
+    const uploadedImages = [];
+    
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Не вдалося завантажити зображення');
+        }
+        
+        const uploadData = await uploadResponse.json();
+        const fileInUploadedFiles = uploadedFiles.find(f => f.file === file);
+        
+        uploadedImages.push({
+          url: uploadData.url,
+          alt: fileInUploadedFiles?.alt || file.name.split('.')[0]
+        });
+      } catch (error) {
+        console.error('Помилка завантаження зображення:', error);
+        throw error;
+      }
+    }
+    
+    return uploadedImages;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -115,10 +136,29 @@ export default function NewGalleryPage() {
         finalImages = [...finalImages, ...uploadedImages];
       }
       
-      // Якщо є завантажена обкладинка, імітуємо її завантаження на сервер
+      // Якщо є завантажена обкладинка, завантажуємо її на сервер
       if (coverImageFile) {
-        const uploadedCover = coverImagePreview || '';
-        finalCoverImage = uploadedCover;
+        const formData = new FormData();
+        formData.append('file', coverImageFile);
+        
+        try {
+          const uploadResponse = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!uploadResponse.ok) {
+            throw new Error('Не вдалося завантажити обкладинку');
+          }
+          
+          const uploadData = await uploadResponse.json();
+          finalCoverImage = uploadData.url;
+        } catch (error) {
+          console.error('Помилка завантаження обкладинки:', error);
+          setError('Не вдалося завантажити обкладинку. Спробуйте знову.');
+          setIsSubmitting(false);
+          return;
+        }
       }
       
       const response = await fetch('/api/galleries', {
