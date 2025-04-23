@@ -13,6 +13,7 @@ interface Event {
   location: string;
   status: string;
   price: number;
+  currency: string;
   image: string;
 }
 
@@ -149,6 +150,9 @@ export default function EventsAdminPage() {
                   Ціна
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Валюта
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Статус
                 </th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -194,7 +198,10 @@ export default function EventsAdminPage() {
                       <div className="text-sm text-gray-500">{event.location}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{event.price} грн</div>
+                      <div className="text-sm text-gray-900">{event.price} {event.currency === 'UAH' ? 'грн' : event.currency === 'USD' ? '$' : '€'}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">{event.currency === 'UAH' ? 'грн' : event.currency === 'USD' ? '$' : '€'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span 
@@ -293,9 +300,9 @@ export default function EventsAdminPage() {
                         <span className="text-xs font-medium text-gray-500">Місце:</span>
                         <p className="text-sm text-gray-700">{event.location}</p>
                       </div>
-                      <div>
-                        <span className="text-xs font-medium text-gray-500">Ціна:</span>
-                        <p className="text-sm text-gray-700">{event.price} грн</p>
+                      <div className="mb-2">
+                        <div className="text-sm font-medium text-gray-700">Вартість:</div>
+                        <div className="text-sm text-gray-900">{event.price} {event.currency === 'UAH' ? 'грн' : event.currency === 'USD' ? '$' : '€'}</div>
                       </div>
                     </div>
 

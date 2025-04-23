@@ -70,7 +70,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ schedule, onChange }) =
                 type="text"
                 value={day.title}
                 onChange={(e) => updateDayTitle(dayIndex, e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 placeholder="Назва дня"
               />
             </div>
@@ -91,7 +91,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ schedule, onChange }) =
                   type="text"
                   value={activity}
                   onChange={(e) => updateActivity(dayIndex, activityIndex, e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                   placeholder="Опис активності"
                 />
                 <button

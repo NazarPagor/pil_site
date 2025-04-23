@@ -37,6 +37,7 @@ export async function POST(request: Request) {
         locationLat: body.locationLat,
         locationLng: body.locationLng,
         price: body.price || 0,
+        currency: body.currency || 'UAH',
         maxParticipants: body.maxParticipants || 20,
         availablePlaces: body.availablePlaces,
         duration: body.duration,

@@ -29,6 +29,7 @@ model Event {
   locationLat         Float?
   locationLng         Float?
   price               Int
+  currency            String        @default("UAH")
   maxParticipants     Int
   currentParticipants Int           @default(0)
   availablePlaces     Int?

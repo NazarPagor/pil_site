@@ -20,6 +20,7 @@ interface Event {
   locationLat?: number;
   locationLng?: number;
   price: number;
+  currency: string;
   maxParticipants: number;
   availablePlaces?: number;
   duration?: string;
@@ -142,7 +143,7 @@ const EventsPageContent = () => {
               // Форматування ціни
               const formattedPrice = new Intl.NumberFormat('uk-UA', {
                 style: 'currency',
-                currency: 'UAH',
+                currency: event.currency || 'UAH',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               }).format(event.price);

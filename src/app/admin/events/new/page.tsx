@@ -14,11 +14,8 @@ interface FormData {
   endDate: string;
   location: string;
   locationDescription: string;
-  locationLat: string;
-  locationLng: string;
   price: string;
-  maxParticipants: string;
-  hasAvailablePlaces: boolean; 
+  currency: string;
   duration: string;
   image: File | null;
   galleryImages: string[];
@@ -54,11 +51,8 @@ export default function EventNewRedirect() {
     endDate: '',
     location: '',
     locationDescription: '',
-    locationLat: '',
-    locationLng: '',
     price: '',
-    maxParticipants: '20',
-    hasAvailablePlaces: true,
+    currency: 'UAH',
     duration: '',
     image: null,
     galleryImages: [],
@@ -114,12 +108,8 @@ export default function EventNewRedirect() {
         endDate: formData.endDate ? new Date(formData.endDate).toISOString() : new Date(formData.startDate).toISOString(),
         location: formData.location,
         locationDescription: formData.locationDescription,
-        locationLat: formData.locationLat ? parseFloat(formData.locationLat) : null,
-        locationLng: formData.locationLng ? parseFloat(formData.locationLng) : null,
         price: parseInt(formData.price) || 0,
-        maxParticipants: parseInt(formData.maxParticipants) || 20,
-        // Визначаємо availablePlaces на основі hasAvailablePlaces
-        availablePlaces: formData.hasAvailablePlaces ? parseInt(formData.maxParticipants) || 20 : 0,
+        currency: formData.currency,
         duration: formData.duration,
         difficulty: formData.difficulty,
         status: formData.status,
@@ -235,7 +225,7 @@ export default function EventNewRedirect() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 required
               />
             </div>
@@ -250,7 +240,7 @@ export default function EventNewRedirect() {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 required
               />
             </div>
@@ -265,7 +255,7 @@ export default function EventNewRedirect() {
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 required
               />
             </div>
@@ -280,7 +270,7 @@ export default function EventNewRedirect() {
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
               />
             </div>
 
@@ -295,53 +285,38 @@ export default function EventNewRedirect() {
                 value={formData.duration}
                 onChange={handleChange}
                 placeholder="наприклад: 7 днів"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 required
               />
             </div>
 
             <div>
               <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                Вартість (грн) *
+                Вартість *
               </label>
-              <input
-                type="number"
-                id="price"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                placeholder="Наприклад: 500"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="maxParticipants" className="block text-sm font-medium text-gray-700 mb-1">
-                Максимальна кількість учасників
-              </label>
-              <input
-                type="number"
-                id="maxParticipants"
-                name="maxParticipants"
-                value={formData.maxParticipants}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="hasAvailablePlaces"
-                name="hasAvailablePlaces"
-                checked={formData.hasAvailablePlaces}
-                onChange={handleCheckboxChange}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-              />
-              <label htmlFor="hasAvailablePlaces" className="ml-2 block text-sm text-gray-700">
-                Є вільні місця
-              </label>
+              <div className="flex space-x-2">
+                <input
+                  type="number"
+                  id="price"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  placeholder="Наприклад: 500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+                  required
+                />
+                <select
+                  id="currency"
+                  name="currency"
+                  value={formData.currency}
+                  onChange={handleChange}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+                >
+                  <option value="UAH">₴ UAH</option>
+                  <option value="USD">$ USD</option>
+                  <option value="EUR">€ EUR</option>
+                </select>
+              </div>
             </div>
 
             <div>
@@ -353,7 +328,7 @@ export default function EventNewRedirect() {
                 name="difficulty"
                 value={formData.difficulty}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
               >
                 <option value="easy">Легка</option>
                 <option value="medium">Середня</option>
@@ -370,7 +345,7 @@ export default function EventNewRedirect() {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
               >
                 <option value="active">Активний</option>
                 <option value="inactive">Неактивний</option>
@@ -407,7 +382,7 @@ export default function EventNewRedirect() {
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 required
               ></textarea>
               <p className="text-xs text-gray-500 mt-1">Короткий опис, який відображатиметься в списку подій</p>
@@ -430,7 +405,7 @@ export default function EventNewRedirect() {
                   value={formData.longDescription}
                   onChange={handleChange}
                   rows={6}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 ></textarea>
                 <p className="text-xs text-gray-500 mt-1">Можна використовувати HTML-теги (p, ul, li, strong, em тощо)</p>
               </div>
@@ -445,38 +420,8 @@ export default function EventNewRedirect() {
                   value={formData.locationDescription}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 ></textarea>
-              </div>
-              
-              <div>
-                <label htmlFor="locationLat" className="block text-sm font-medium text-gray-700 mb-1">
-                  Широта (для карти)
-                </label>
-                <input
-                  type="text"
-                  id="locationLat"
-                  name="locationLat"
-                  value={formData.locationLat}
-                  onChange={handleChange}
-                  placeholder="Наприклад: 49.8397"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="locationLng" className="block text-sm font-medium text-gray-700 mb-1">
-                  Довгота (для карти)
-                </label>
-                <input
-                  type="text"
-                  id="locationLng"
-                  name="locationLng"
-                  value={formData.locationLng}
-                  onChange={handleChange}
-                  placeholder="Наприклад: 24.0297"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
               </div>
             </div>
             
@@ -495,7 +440,7 @@ export default function EventNewRedirect() {
                     onChange={handleChange}
                     rows={3}
                     placeholder="Наприклад: проживання, харчування, трансфер"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                   ></textarea>
                 </div>
                 
@@ -510,7 +455,7 @@ export default function EventNewRedirect() {
                     onChange={handleChange}
                     rows={3}
                     placeholder="Наприклад: особисті витрати, сувеніри"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                   ></textarea>
                 </div>
               </div>
@@ -530,7 +475,7 @@ export default function EventNewRedirect() {
                   onChange={handleChange}
                   rows={3}
                   placeholder="Наприклад: Закордонний паспорт, медична страховка"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
                 ></textarea>
               </div>
             </div>

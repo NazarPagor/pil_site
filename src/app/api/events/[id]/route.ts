@@ -49,6 +49,7 @@ export async function PUT(
     if (body.locationLat !== undefined) updateData.locationLat = body.locationLat;
     if (body.locationLng !== undefined) updateData.locationLng = body.locationLng;
     if (body.price !== undefined) updateData.price = body.price;
+    if (body.currency !== undefined) updateData.currency = body.currency;
     if (body.maxParticipants !== undefined) updateData.maxParticipants = body.maxParticipants;
     if (body.availablePlaces !== undefined) updateData.availablePlaces = body.availablePlaces;
     if (body.duration !== undefined) updateData.duration = body.duration;

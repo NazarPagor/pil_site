@@ -26,6 +26,7 @@ interface Event {
   locationLat?: number;
   locationLng?: number;
   price: number;
+  currency: string;
   maxParticipants: number;
   availablePlaces?: number;
   duration?: string;
@@ -189,7 +190,7 @@ const EventDetailPageContent = ({ eventId }: EventDetailProps) => {
                 
                 <div className="flex items-center">
                   <CurrencyDollarIcon className="h-5 w-5 text-primary-700 mr-2" />
-                  <span className="text-gray-800">Вартість: {event.price} UAH</span>
+                  <span className="text-gray-800">Вартість: {event.price} {event.currency === 'UAH' ? 'грн' : event.currency === 'USD' ? '$' : '€'}</span>
                 </div>
               </div>
             </div>
@@ -255,7 +256,7 @@ const EventDetailPageContent = ({ eventId }: EventDetailProps) => {
             <EventActionSidebar
               startDate={event.startDate}
               endDate={event.endDate}
-              price={`${event.price} UAH`}
+              price={`${event.price} ${event.currency === 'UAH' ? 'грн' : event.currency === 'USD' ? '$' : '€'}`}
               duration={event.duration || 'Не вказано'}
               status={availablePlaces > 0 ? 'open' : 'closed'}
               filledPercentage={totalPlaces > 0 ? Math.round(((totalPlaces - availablePlaces) / totalPlaces) * 100) : 100}
