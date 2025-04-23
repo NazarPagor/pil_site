@@ -1,19 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: {
-    NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV || '',
-    NEXT_PUBLIC_IS_PREVIEW: process.env.VERCEL_ENV === 'preview' ? 'true' : 'false',
-  },
   async headers() {
     return [
       {
         source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Environment',
-            value: process.env.VERCEL_ENV || 'development',
-          },
-        ],
       },
     ];
   },

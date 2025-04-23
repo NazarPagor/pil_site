@@ -4,13 +4,7 @@ import MainLayout from '@/components/layout/MainLayout';
 
 // Функція для отримання базового URL, яка буде використовуватись в метаданих
 const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_BASE_URL) {
-    return process.env.NEXT_PUBLIC_BASE_URL;
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return 'http://localhost:3000';
+  return 'https://pilgrim.podilsk.com';
 };
 
 export const metadata: Metadata = {

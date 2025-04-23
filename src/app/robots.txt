@@ -5,7 +5,3 @@ Allow: /
 # Block specific sensitive or non-public routes
 Disallow: /admin/
 Disallow: /api/
-
-# Block preview and development query parameters
-Disallow: /*?preview=*
-Disallow: /*?development=*

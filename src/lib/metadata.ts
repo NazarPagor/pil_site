@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 const baseTitle = 'Паломницький центр - Духовні подорожі до святих місць';
 
 export const defaultMetadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL('https://pilgrim.podilsk.com/'),
   title: {
     default: baseTitle,
     template: `%s | Паломницький центр`
@@ -14,7 +14,7 @@ export const defaultMetadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'uk_UA',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    url: 'https://pilgrim.podilsk.com/',
     siteName: 'Паломницький центр',
     title: baseTitle,
     description: 'Організовуємо паломницькі поїздки до святих місць по всьому світу. Духовний супровід, комфортні умови, незабутні враження.',
