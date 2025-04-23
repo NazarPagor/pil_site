@@ -39,8 +39,8 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
     const fetchGallery = async () => {
       try {
         setIsLoading(true);
-        // Mock API call - replace with actual API in production
-        const response = await fetch(`/api/gallery/${params.id}`);
+        // Fix: Use the correct API endpoint path
+        const response = await fetch(`/api/galleries/${params.id}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch gallery');
@@ -51,7 +51,7 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
           title: data.title,
           description: data.description,
           coverImage: data.coverImage,
-          images: data.images.map((url: string) => ({ url, alt: '' }))
+          images: data.images.map((img: any) => ({ url: img.url, alt: img.alt || '' }))
         });
         
         if (data.coverImage) {
@@ -80,21 +80,6 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
         return newErrors;
       });
     }
-  };
-
-  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (errors.coverImage) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.coverImage;
-        return newErrors;
-      });
-    }
-
-    const value = e.target.value;
-    setForm(prev => ({ ...prev, coverImage: value }));
-    setCoverImagePreview(value);
-    setCoverImageFile(null);
   };
 
   const handleCoverImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,27 +131,11 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
     }
   };
 
-  const removeImage = (index: number) => {
-    setForm(prev => {
-      const newImages = [...prev.images];
-      newImages.splice(index, 1);
-      return { ...prev, images: newImages };
-    });
-  };
-
   const removeUploadedFile = (index: number) => {
     setUploadedFiles(prev => {
       const newFiles = [...prev];
       newFiles.splice(index, 1);
       return newFiles;
-    });
-  };
-
-  const updateImageAlt = (index: number, alt: string) => {
-    setForm(prev => {
-      const newImages = [...prev.images];
-      newImages[index] = { ...newImages[index], alt };
-      return { ...prev, images: newImages };
     });
   };
 
@@ -178,104 +147,109 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
     });
   };
 
-  const addImageField = () => {
-    setForm(prev => ({
-      ...prev,
-      images: [...prev.images, { url: '', alt: '' }]
-    }));
-  };
-
-  const handleImageChange = (index: number, field: 'url' | 'alt', value: string) => {
-    setForm(prev => {
-      const newImages = [...prev.images];
-      newImages[index] = { ...newImages[index], [field]: value };
-      return { ...prev, images: newImages };
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate form
+    // Validation
     const newErrors: Record<string, string> = {};
-    
-    if (!form.title.trim()) {
-      newErrors.title = 'Назва є обов\'язковою';
-    }
-    
-    if (!form.coverImage && !coverImageFile && !coverImagePreview) {
-      newErrors.coverImage = 'Обкладинка є обов\'язковою';
-    }
-    
-    const hasImages = form.images.some(img => img.url.trim()) || uploadedFiles.length > 0;
-    if (!hasImages) {
-      newErrors.images = 'Додайте хоча б одне зображення';
-    }
+    if (!form.title.trim()) newErrors.title = 'Title is required';
+    if (!form.description.trim()) newErrors.description = 'Description is required';
+    if (!form.coverImage && !coverImageFile) newErrors.coverImage = 'Cover image is required';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
     
-    try {
-      setIsSaving(true);
+    setIsSaving(true);
+    
+    // Handle file uploads first
+    let coverImageUrl = form.coverImage;
+    
+    if (coverImageFile) {
+      // Upload cover image
+      const formData = new FormData();
+      formData.append('file', coverImageFile);
       
-      // In a real application, you would upload the files here
-      // For simulation, we'll assume the uploads succeed and return URLs
-      
-      // Mock file upload for cover image
-      let finalCoverImage = form.coverImage;
-      if (coverImageFile) {
-        // Simulate uploading the cover image file and getting back a URL
-        // In a real app, you would use FormData to send the file to your server
-        finalCoverImage = URL.createObjectURL(coverImageFile);
+      try {
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload cover image');
+        }
+        
+        const uploadData = await uploadResponse.json();
+        coverImageUrl = uploadData.url;
+      } catch (error) {
+        console.error('Error uploading cover image:', error);
+        setIsSaving(false);
+        return;
       }
+    }
+    
+    // Upload new images
+    const processedImages = [...form.images];
+    
+    for (const uploadedFile of uploadedFiles) {
+      const formData = new FormData();
+      formData.append('file', uploadedFile.file);
       
-      // Mock file upload for gallery images
-      const uploadedImageUrls = uploadedFiles.map(file => ({
-        url: URL.createObjectURL(file.file),
-        alt: file.alt
-      }));
-      
-      // Combine existing image URLs with newly uploaded ones
-      const finalImages = [
-        ...form.images.filter(img => img.url.trim()),
-        ...uploadedImageUrls
-      ];
-      
-      // Prepare the data to send to the API
-      const galleryData = {
-        title: form.title,
-        description: form.description,
-        coverImage: finalCoverImage,
-        images: finalImages,
-      };
-      
-      // Mock API call - replace with actual API in production
-      const response = await fetch(`/api/gallery/${params.id}`, {
+      try {
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload image');
+        }
+        
+        const uploadData = await uploadResponse.json();
+        processedImages.push({
+          url: uploadData.url,
+          alt: uploadedFile.alt
+        });
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        setIsSaving(false);
+        return;
+      }
+    }
+    
+    // Now update the gallery with the new data
+    try {
+      const updateResponse = await fetch(`/api/galleries/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(galleryData),
+        body: JSON.stringify({
+          title: form.title,
+          description: form.description,
+          coverImage: coverImageUrl,
+          images: processedImages
+        }),
       });
       
-      if (!response.ok) {
+      if (!updateResponse.ok) {
         throw new Error('Failed to update gallery');
       }
       
-      // Redirect to gallery list
+      // Redirect to gallery list or show success message
       router.push('/admin/gallery');
-      
     } catch (error) {
       console.error('Error updating gallery:', error);
+    } finally {
       setIsSaving(false);
     }
   };
-
+  
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
@@ -283,299 +257,210 @@ export default function EditGalleryPage({ params }: { params: { id: string } }) 
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-        <h1 className="text-xl md:text-2xl font-bold text-primary-800">Редагування галереї</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-primary-800">Редагування галереї</h1>
         <Link 
           href="/admin/gallery" 
-          className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md"
         >
           Повернутися до списку
         </Link>
       </div>
 
+      {Object.keys(errors).length > 0 && (
+        <div className="bg-red-50 p-4 rounded-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Виправте помилки:</h3>
+              <ul className="mt-1 list-disc list-inside text-sm text-red-700">
+                {Object.values(errors).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Основна інформація</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Назва галереї*
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={form.title}
-                onChange={handleInputChange}
-                className={`block w-full rounded-md sm:text-sm ${
-                  errors.title 
-                    ? 'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500' 
-                    : 'border-gray-300 focus:ring-primary-500 focus:border-primary-500'
-                }`}
-              />
-              {errors.title && (
-                <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-              )}
-            </div>
-            
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Опис
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows={3}
-                value={form.description}
-                onChange={handleInputChange}
-                className="block w-full rounded-md border-gray-300 sm:text-sm focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-          </div>
-        </div>
-        
-        <div className="p-4 sm:p-6 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Обкладинка галереї*</h2>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="p-6">
+          {/* Основна інформація */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-primary-700 border-b pb-2">Основна інформація</h2>
+            <div className="grid grid-cols-1 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL обкладинки
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                  Назва галереї *
                 </label>
-                <div className="flex flex-col sm:flex-row">
-                  <input
-                    type="text"
-                    id="coverImage"
-                    name="coverImage"
-                    value={form.coverImage}
-                    onChange={handleCoverImageChange}
-                    placeholder="https://example.com/image.jpg"
-                    className={`block w-full rounded-md sm:rounded-r-none sm:text-sm mb-2 sm:mb-0 ${
-                      errors.coverImage 
-                        ? 'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:ring-primary-500 focus:border-primary-500'
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => coverImageRef.current?.click()}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md sm:rounded-l-none text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                  >
-                    <svg className="h-5 w-5 mr-2 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                    Завантажити
-                  </button>
-                  <input
-                    type="file"
-                    ref={coverImageRef}
-                    onChange={handleCoverImageFileChange}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                </div>
-                {errors.coverImage && (
-                  <p className="mt-1 text-sm text-red-600">{errors.coverImage}</p>
-                )}
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={form.title}
+                  onChange={handleInputChange}
+                  className={`w-full px-3 py-2 border ${errors.title ? 'border-red-300' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900`}
+                  placeholder="Введіть назву галереї"
+                  required
+                />
+                {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
               </div>
-              
               <div>
-                {coverImagePreview && (
-                  <div className="mt-2 relative rounded-md overflow-hidden h-32 sm:h-40 bg-gray-100">
-                    <img
-                      src={coverImagePreview}
-                      alt="Cover preview"
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCoverImagePreview(null);
-                        setCoverImageFile(null);
-                        setForm(prev => ({ ...prev, coverImage: '' }));
-                      }}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none"
-                    >
-                      <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Опис галереї
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={form.description}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+                  placeholder="Введіть опис галереї"
+                />
               </div>
             </div>
           </div>
-        </div>
-        
-        <div className="p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
-            <h2 className="text-lg font-medium text-gray-900 mb-2 sm:mb-0">Зображення галереї*</h2>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={addImageField}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              >
-                <svg className="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                Додати URL
-              </button>
-              <button
-                type="button"
-                onClick={() => imagesInputRef.current?.click()}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              >
-                <svg className="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-                Завантажити файли
-              </button>
-              <input
-                type="file"
-                ref={imagesInputRef}
-                onChange={handleImagesFileChange}
-                multiple
-                accept="image/*"
-                className="hidden"
-              />
-            </div>
-          </div>
           
-          {errors.images && (
-            <p className="mt-1 mb-4 text-sm text-red-600">{errors.images}</p>
-          )}
-          
-          <div className="space-y-6">
-            {/* URLs */}
-            {form.images.length > 0 && (
-              <div className="space-y-4">
-                {form.images.map((image, index) => (
-                  <div key={index} className="p-4 bg-gray-50 rounded-md">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="md:col-span-2 space-y-3">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">URL зображення</label>
-                          <input
-                            type="text"
-                            value={image.url}
-                            onChange={(e) => handleImageChange(index, 'url', e.target.value)}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm sm:text-sm focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="https://example.com/image.jpg"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Альтернативний текст</label>
-                          <input
-                            type="text"
-                            value={image.alt}
-                            onChange={(e) => handleImageChange(index, 'alt', e.target.value)}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm sm:text-sm focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="Опис зображення"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between md:justify-end space-x-4">
-                        {image.url && (
-                          <div className="w-16 h-16 relative bg-gray-100 rounded overflow-hidden">
-                            <img 
-                              src={image.url} 
-                              alt={image.alt || "Gallery preview"} 
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="inline-flex items-center p-2 border border-gray-300 rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none"
-                        >
-                          <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
+          {/* Обкладинка галереї */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-primary-700 border-b pb-2">Обкладинка галереї *</h2>
+            <div className="space-y-4">
+              <div>
+                <input
+                  type="file"
+                  id="coverImageFile"
+                  accept="image/*"
+                  onChange={handleCoverImageFileChange}
+                  className="w-full"
+                />
+                <p className="mt-1 text-sm text-gray-500">Рекомендований розмір: 1200x800px</p>
+                
+                {coverImagePreview && (
+                  <div className="mt-2">
+                    <div className="relative h-48 w-full rounded-md overflow-hidden">
+                      <Image
+                        src={coverImagePreview}
+                        alt="Превью обкладинки"
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                   </div>
-                ))}
+                )}
               </div>
-            )}
+            </div>
+          </div>
+          
+          {/* Зображення галереї */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-primary-700 border-b pb-2">Зображення галереї</h2>
             
-            {/* Uploaded files */}
-            {uploadedFiles.length > 0 && (
-              <div className="space-y-4">
-                <div className="border-t border-gray-200 pt-4">
-                  <h3 className="text-md font-medium text-gray-900 mb-3">Завантажені зображення</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {uploadedFiles.map((file, index) => (
-                    <div key={index} className="p-4 bg-gray-50 rounded-md">
-                      <div className="space-y-3">
-                        <div className="relative w-full h-40 bg-gray-100 rounded overflow-hidden">
-                          <img 
-                            src={file.preview} 
-                            alt={file.alt || file.file.name}
-                            className="w-full h-full object-contain"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeUploadedFile(index)}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none"
-                          >
-                            <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Назва файлу</label>
-                          <p className="mt-1 text-sm text-gray-500 truncate">{file.file.name}</p>
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Альтернативний текст</label>
-                          <input
-                            type="text"
-                            value={file.alt}
-                            onChange={(e) => updateUploadedFileAlt(index, e.target.value)}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="Опис зображення"
-                          />
-                        </div>
+            {/* Наявні зображення */}
+            {form.images.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-3">Наявні зображення:</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {form.images.map((image, index) => (
+                    <div key={index} className="relative border rounded-md p-2 bg-gray-50">
+                      <div className="relative h-32 w-full rounded-md overflow-hidden">
+                        <Image
+                          src={image.url}
+                          alt={image.alt}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newImages = [...form.images];
+                          newImages.splice(index, 1);
+                          setForm({ ...form, images: newImages });
+                        }}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
+            
+            {/* Додати нові зображення */}
+            <div className="space-y-4 mt-6">
+              <p className="text-sm font-medium text-gray-700 mb-1">Додати нові зображення:</p>
+              <input
+                type="file"
+                id="galleryImages"
+                accept="image/*"
+                onChange={handleImagesFileChange}
+                multiple
+                ref={imagesInputRef}
+                className="w-full"
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Ви можете вибрати декілька зображень одночасно
+              </p>
+              
+              {uploadedFiles.length > 0 && (
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {uploadedFiles.map((file, index) => (
+                    <div key={index} className="relative border rounded-md p-2 bg-gray-50">
+                      <div className="relative h-32 w-full rounded-md overflow-hidden">
+                        <Image
+                          src={file.preview}
+                          alt={file.alt}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          value={file.alt}
+                          onChange={(e) => updateUploadedFileAlt(index, e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900"
+                          placeholder="Альт текст"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeUploadedFile(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
-        <div className="px-4 sm:px-6 py-4 bg-gray-50 flex flex-col sm:flex-row justify-end gap-3">
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
           <Link
             href="/admin/gallery"
-            className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
           >
             Скасувати
           </Link>
           <button
             type="submit"
-            className="inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             disabled={isSaving}
+            className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
           >
-            {isSaving ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Збереження...
-              </>
-            ) : 'Зберегти зміни'}
+            {isSaving ? 'Збереження...' : 'Зберегти зміни'}
           </button>
         </div>
       </form>
