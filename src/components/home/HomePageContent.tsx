@@ -204,15 +204,17 @@ export default function HomePageContent() {
       </section>
 
       {/* Mission Section з анімацією */}
-      <section className="max-w-4xl mx-auto text-center px-4">
+      <section className="max-w-5xl mx-auto text-center px-4">
         <AnimateOnScroll animation="animate-fade-in">
           <h2 className="text-3xl font-bold mb-2 text-primary-900 drop-shadow-sm">
-            {homePage?.missionTitle || "Наша місія"}
+            Місія паломницького центру
           </h2>
           <div className="w-20 h-1 bg-primary-600 mx-auto mb-8 rounded-full"></div>
-          <p className="text-lg text-warmGray-700 leading-relaxed">
-            {homePage?.missionDescription || 
-              "Ми прагнемо зробити паломницькі поїздки доступними для всіх, хто бажає відвідати свята місця. Наш центр організовує безпечні та комфортні подорожі, які дозволяють глибше пізнати духовну спадщину та збагатитися духовно."}
+          <p className="text-lg text-warmGray-700 leading-relaxed mb-6">
+            Паломницький центр виконує важливу духовну, освітню та організаційну роль у житті віруючих. Його головна місія — допомагати людям у здійсненні паломництва до святих місць, сприяти їхньому духовному зростанню та збереженню релігійних традицій.
+          </p>
+          <p className="text-lg text-warmGray-700 leading-relaxed mb-6">
+            Паломництво — це не просто подорож, а шлях до Бога. Центр прагне зробити цю дорогу доступною для всіх, хто шукає духовного піднесення, зцілення душі та єднання з вірою.
           </p>
         </AnimateOnScroll>
       </section>
@@ -233,66 +235,94 @@ export default function HomePageContent() {
         </div>
       </section>
 
-      {/* Services Section з картками */}
-      <section className="max-w-7xl mx-auto px-4">
+      {/* Services Section */}
+      <section className="max-w-7xl mx-auto px-4 pt-10">
         <AnimateOnScroll animation="animate-fade-in">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-2 text-primary-900 drop-shadow-sm">
-              {homePage?.servicesTitle || "Наші послуги"}
+              Основні завдання паломницького центру
             </h2>
             <div className="w-20 h-1 bg-primary-600 mx-auto mb-6 rounded-full"></div>
-            <p className="text-lg text-warmGray-600 max-w-3xl mx-auto">
-              {homePage?.servicesDescription || 
-                "Ми пропонуємо повний спектр послуг для забезпечення незабутньої та комфортної подорожі"}
-            </p>
           </div>
         </AnimateOnScroll>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-          <AnimateOnScroll animation="animate-slide-in-up" delay={100}>
-            <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-primary-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <div className="bg-primary-200 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 mb-10">
+          <AnimateOnScroll animation="animate-slide-in-left" delay={100}>
+            <div className="bg-white p-8 rounded-xl shadow-lg h-full">
+              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-primary-900">Організація поїздок</h3>
-              <p className="text-warmGray-600 leading-relaxed">
-                Повний комплекс послуг з організації паломницьких поїздок, включаючи
-                транспорт, оформлення документів, проживання та харчування на всьому шляху вашої подорожі.
-              </p>
+              <h3 className="text-xl font-semibold mb-4 text-primary-900">Організація паломницьких поїздок</h3>
+              <ul className="text-warmGray-600 leading-relaxed list-disc pl-5 space-y-2">
+                <li>Планування маршрутів до святинь.</li>
+                <li>Забезпечення комфортних та безпечних умов для паломників.</li>
+                <li>Супровід духовних наставників під час поїздок.</li>
+              </ul>
             </div>
           </AnimateOnScroll>
 
-          <AnimateOnScroll animation="animate-slide-in-up" delay={200}>
-            <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-primary-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <div className="bg-primary-200 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          <AnimateOnScroll animation="animate-slide-in-right" delay={100}>
+            <div className="bg-white p-8 rounded-xl shadow-lg h-full">
+              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-primary-900">Духовний супровід</h3>
-              <p className="text-warmGray-600 leading-relaxed">
-                Професійні гіди та духовні наставники супроводжують групи під час
-                поїздок, розповідаючи про історію та духовне значення святих місць.
-                Регулярні молитви та служби за вашим бажанням.
-              </p>
+              <h3 className="text-xl font-semibold mb-4 text-primary-900">Духовний супровід і просвіта</h3>
+              <ul className="text-warmGray-600 leading-relaxed list-disc pl-5 space-y-2">
+                <li>Проведення лекцій, семінарів та бесід на релігійні теми.</li>
+                <li>Підготовка паломників до подорожі через молитву, сповідь та причастя.</li>
+                <li>Ознайомлення з історією та значенням святих місць.</li>
+              </ul>
             </div>
           </AnimateOnScroll>
-          
-          <AnimateOnScroll animation="animate-slide-in-up" delay={300}>
-            <div className="bg-white p-8 rounded-xl shadow-lg border-t-4 border-primary-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <div className="bg-primary-200 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+
+          <AnimateOnScroll animation="animate-slide-in-left" delay={200}>
+            <div className="bg-white p-8 rounded-xl shadow-lg h-full">
+              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-primary-900">Індивідуальні програми</h3>
-              <p className="text-warmGray-600 leading-relaxed">
-                Розробка індивідуальних програм паломництва за вашими побажаннями.
-                Можливість організації приватних поїздок для окремих груп.
-                Гнучкий графік та маршрути подорожей.
-              </p>
+              <h3 className="text-xl font-semibold mb-4 text-primary-900">Сприяння духовному оновленню</h3>
+              <ul className="text-warmGray-600 leading-relaxed list-disc pl-5 space-y-2">
+                <li>Допомога у переживанні паломництва як часу молитви та покаяння.</li>
+                <li>Створення можливостей для спілкування з духовенством.</li>
+                <li>Організація молитовних богослужінь під час поїздки.</li>
+              </ul>
+            </div>
+          </AnimateOnScroll>
+
+          <AnimateOnScroll animation="animate-slide-in-right" delay={200}>
+            <div className="bg-white p-8 rounded-xl shadow-lg h-full">
+              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-primary-900">Популяризація паломництва</h3>
+              <ul className="text-warmGray-600 leading-relaxed list-disc pl-5 space-y-2">
+                <li>Видання літератури про святі місця.</li>
+                <li>Поширення інформації через соціальні мережі, сайти, друковані матеріали.</li>
+                <li>Співпраця з церквою, монастирями та іншими релігійними організаціями.</li>
+              </ul>
+            </div>
+          </AnimateOnScroll>
+
+          <AnimateOnScroll animation="animate-slide-in-up" delay={300}>
+            <div className="md:col-span-2 bg-white p-8 rounded-xl shadow-lg">
+              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-primary-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-4 text-primary-900">Соціальна місія</h3>
+              <ul className="text-warmGray-600 leading-relaxed list-disc pl-5 space-y-2">
+                <li>Допомога тим, хто не має можливості здійснити паломництво самостійно.</li>
+                <li>Сприяння розвитку міжконфесійного діалогу через спільні паломництва.</li>
+              </ul>
             </div>
           </AnimateOnScroll>
         </div>
