@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyAdminCookie } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -12,10 +13,13 @@ export async function GET() {
       );
     }
 
-    // This will be replaced with actual database queries
+    // Fetch real counts from database
+    const eventsCount = await prisma.event.count();
+    const galleriesCount = await prisma.gallery.count();
+
     const stats = {
-      eventsCount: 5,
-      galleriesCount: 3,
+      eventsCount,
+      galleriesCount,
     };
 
     return NextResponse.json(stats);

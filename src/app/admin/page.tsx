@@ -105,7 +105,7 @@ export default function AdminDashboard() {
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) return 'Доброго ранку';
-    if (hour >= 12 && hour < 18) return 'Доброго дня';
+    if (hour >= 12 && hour < 1) return 'Доброго дня';
     return 'Доброго вечора';
   };
 
