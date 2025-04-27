@@ -78,6 +78,7 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <head>
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="alternate" hrefLang="uk" href={baseUrl} />
         <link rel="alternate" hrefLang="x-default" href={baseUrl} />
       </head>
