@@ -170,9 +170,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
             <div>
               <h3 className="text-xl font-semibold mb-4">Контакти</h3>
               <address className="not-italic">
-                <p className="mb-2">м. Хмельницький</p>
-                <p className="mb-2">Телефон: +380 (12) 345-67-89</p>
-                <p>Email: info@pilgrim.com.ua</p>
+                {/* <p className="mb-2">м. Хмельницький</p> */}
+                <p className="mb-2">Телефон: 096 46 49 967</p>
+                <p>Email: podilskiypiligrim@gmail.com</p>
               </address>
             </div>
             <div>

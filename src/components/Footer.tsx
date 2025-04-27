@@ -58,16 +58,17 @@ export const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Контакти</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a href="tel:+380123456789" className="hover:text-white transition-colors">
-                  +38 (012) 345-67-89
+                <a href="tel:+380964649967" className="hover:text-white transition-colors">
+                  +38 (096) 46-49-967
+      
                 </a>
               </li>
               <li>
-                <a href="mailto:info@pilgrim.com.ua" className="hover:text-white transition-colors">
-                  info@pilgrim.com.ua
+                <a href="mailto:podilskiypiligrim@gmail.com" className="hover:text-white transition-colors">
+                  podilskiypiligrim@gmail.com
                 </a>
               </li>
-              <li>м. Хмельницький</li>
+              {/* <li>м. Хмельницький</li> */}
             </ul>
           </div>
         </div>

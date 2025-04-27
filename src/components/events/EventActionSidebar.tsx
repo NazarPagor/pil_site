@@ -18,7 +18,7 @@ type EventActionSidebarProps = {
   endDate: string;
   price: string;
   duration: string;
-  status: 'open' | 'closed';  // Статус бронювання (відкрито/закрито)
+  status: 'open' | 'closed';  
   filledPercentage: number;   // Відсоток заповненості для прогрес-бару
   documentsRequired: string[];
 };
@@ -65,25 +65,28 @@ const EventActionSidebar: React.FC<EventActionSidebarProps> = ({
           <span className="text-2xl font-bold text-primary-900">{price}</span>
           <span className="text-gray-600">на особу</span>
         </div>
+
+        <p className="text-gray-600 text-[14px]">ЗАБРОНЮВАТИ МІСЦЕ ЧИ ОТРИМАТИ ДОДАТКОВУ ІНФОРМАЦІЮ </p>
+        <a href="tel:+380964649967"><h3 className="text-gray-600 mt-2 text-[18px] underline" >096 46 49 967</h3></a>
         
         {/* Індикатор заповненості */}
         <div className="mb-4">
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-gray-600">Статус бронювання:</span>
-            <span className="font-medium text-primary-800">{isOpen ? 'Відкрито' : 'Закрито'}</span>
+          <div className="text-sm mb-1">
+           
+            {/* <span className="font-medium text-primary-800">{isOpen ? 'Відкрито' : 'Закрито'}</span> */}
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
+          {/* <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div 
               className="bg-primary-600 h-2.5 rounded-full" 
               style={{ width: `${filledPercentage}%` }}
             ></div>
-          </div>
-          <div className="mt-1 text-sm text-gray-600">
+          </div> */}
+          {/* <div className="mt-1 text-sm text-gray-600">
             {isOpen ? 'Ви можете забронювати цю поїздку' : 'На жаль, місць більше немає'}
-          </div>
+          </div> */}
         </div>
         
-        <button
+        {/* <button
           onClick={handleBooking}
           className={`w-full py-3 px-4 font-medium rounded-md transition-colors ${
             isOpen 
@@ -93,7 +96,7 @@ const EventActionSidebar: React.FC<EventActionSidebarProps> = ({
           disabled={!isOpen}
         >
           {isOpen ? 'Забронювати місце' : 'Бронювання закрито'}
-        </button>
+        </button> */}
       </div>
       
       <div className="p-6 space-y-4">
@@ -155,7 +158,7 @@ const EventActionSidebar: React.FC<EventActionSidebarProps> = ({
           </button>
           
           <a 
-            href="tel:+380971234567"
+            href="tel:+380964649967"
             className="inline-flex items-center text-gray-700 hover:text-primary-700"
           >
             <PhoneIcon className="h-5 w-5 mr-1" />

@@ -245,7 +245,7 @@ export default function AboutPageContent() {
       </section>
 
       {/* Наша команда */}
-      <section className="bg-warmGray-100 py-16">
+      {/* <section className="bg-warmGray-100 py-16">
         <div className="max-w-6xl mx-auto px-4">
           <AnimateOnScroll animation="animate-fade-in" delay={100}>
             <div className="text-center mb-12">
@@ -279,7 +279,7 @@ export default function AboutPageContent() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Чому обирають нас */}
       <section className="max-w-6xl mx-auto px-4 mb-12">

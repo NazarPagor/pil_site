@@ -133,14 +133,14 @@ export default function ContactsPageContent() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold mb-3 text-primary-900">Адреса</h3>
-              <p className="text-warmGray-600 mb-2">
+              {/* <p className="text-warmGray-600 mb-2">
                 вул. Свята, 1<br />
                 Київ, 01001
-              </p>
+              </p> */}
               <p className="text-warmGray-600">
                 <span className="text-primary-600 font-medium">Графік роботи:</span><br />
                 Пн-Пт: 9:00 - 18:00<br />
-                Сб: 10:00 - 15:00
+                {/* Сб: 10:00 - 15:00 */}
               </p>
             </div>
           </AnimateOnScroll>
@@ -154,13 +154,13 @@ export default function ContactsPageContent() {
               </div>
               <h3 className="text-xl font-semibold mb-3 text-primary-900">Телефон</h3>
               <p className="text-warmGray-600 mb-2">
-                <a href="tel:+380971234567" className="hover:text-primary-600 transition-colors">+38 (097) 123-45-67</a><br />
-                <a href="tel:+380631234567" className="hover:text-primary-600 transition-colors">+38 (063) 123-45-67</a>
+                <a href="tel:+380964649967" className="hover:text-primary-600 transition-colors">+38 (096) 46-49-967</a><br />
+                {/* <a href="tel:+380964649967" className="hover:text-primary-600 transition-colors">+38 (096) 46-49-967</a> */}
               </p>
-              <p className="text-warmGray-600">
+              {/* <p className="text-warmGray-600">
                 <span className="text-primary-600 font-medium">Гаряча лінія:</span><br />
-                <a href="tel:+380800123456" className="hover:text-primary-600 transition-colors">0 800 123 456</a> (безкоштовно)
-              </p>
+                <a href="tel:+380964649967" className="hover:text-primary-600 transition-colors">0 800 123 456</a> (безкоштовно)
+              </p> */}
             </div>
           </AnimateOnScroll>
           
@@ -174,9 +174,9 @@ export default function ContactsPageContent() {
               <h3 className="text-xl font-semibold mb-3 text-primary-900">Email</h3>
               <p className="text-warmGray-600 mb-2">
                 <a href="mailto:info@pilgrim.te.ua" className="hover:text-primary-600 transition-colors">info@pilgrim.te.ua</a><br />
-                <a href="mailto:booking@pilgrim.te.ua" className="hover:text-primary-600 transition-colors">booking@pilgrim.te.ua</a>
+                {/* <a href="mailto:booking@pilgrim.te.ua" className="hover:text-primary-600 transition-colors">booking@pilgrim.te.ua</a> */}
               </p>
-              <div className="flex mt-4 space-x-3">
+              {/* <div className="flex mt-4 space-x-3">
                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
@@ -192,7 +192,7 @@ export default function ContactsPageContent() {
                     <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
                   </svg>
                 </a>
-              </div>
+              </div> */}
             </div>
           </AnimateOnScroll>
         </div>
@@ -200,9 +200,9 @@ export default function ContactsPageContent() {
 
       {/* Контактна форма та FAQ */}
       <section className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
           {/* Контактна форма */}
-          <AnimateOnScroll animation="animate-slide-in-up">
+          {/* <AnimateOnScroll animation="animate-slide-in-up">
             <div className="bg-white p-8 rounded-xl shadow-md">
               <h2 className="text-2xl font-bold mb-6 text-primary-900">Надіслати повідомлення</h2>
               
@@ -337,7 +337,7 @@ export default function ContactsPageContent() {
                 </form>
               )}
             </div>
-          </AnimateOnScroll>
+          </AnimateOnScroll> */}
           
           {/* FAQ */}
           <AnimateOnScroll animation="animate-slide-in-up" delay={100}>
@@ -381,12 +381,12 @@ export default function ContactsPageContent() {
       </section>
 
       {/* Гугл карта */}
-      <section className="max-w-7xl mx-auto px-4 mb-16">
+      {/* <section className="max-w-7xl mx-auto px-4 mb-16">
         <AnimateOnScroll animation="animate-fade-in">
           <h2 className="text-2xl font-bold mb-6 text-primary-800 text-center">Як нас знайти</h2>
           <div className="rounded-xl overflow-hidden shadow-md" ref={mapRef}></div>
         </AnimateOnScroll>
-      </section>
+      </section> */}
     </div>
   );
 } 

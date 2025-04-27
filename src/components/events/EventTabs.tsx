@@ -129,6 +129,11 @@ const EventTabs: React.FC<EventTabsProps> = ({ eventId, eventData }) => {
       <div className="p-6">
         {activeTab === 'program' && (
           <div>
+            <h3 className="text-xl font-semibold text-primary-900 mb-4">Про місце проведення</h3>
+            <div 
+              className="prose max-w-none text-gray-700 mb-8"
+              dangerouslySetInnerHTML={{ __html: eventData?.location?.description }}
+            />
             <h3 className="text-xl font-semibold text-primary-900 mb-4">Про поїздку</h3>
             <div 
               className="prose max-w-none text-gray-700 mb-8"

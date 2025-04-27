@@ -46,6 +46,8 @@ const EventDetailPageContent = ({ eventId }: EventDetailProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+
   
   useEffect(() => {
     async function fetchEventData() {
